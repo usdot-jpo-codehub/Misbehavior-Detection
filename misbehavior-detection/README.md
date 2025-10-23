@@ -31,7 +31,7 @@ gcc -I ../asn1c/skeletons/ -DPDU={PDU_NAME} -fPIC -shared -o {PDU_NAME}.so -lm *
 2. Provide a COER-encoded IEEE1609Dot2Data file in `data/Ieee1609Dot2Data/`.
 3. Run detection:
 ```
-python3 src/detection.py --pdu {NewPDU} --lib {NewPDU} --misbehaviors acceleration-ValueOutofRange --bsm data/Ieee1609Dot2Data/{filename}
+python3 src/detection.py --pdu {pduname} --lib {libname} --misbehaviors acceleration-ValueOutofRange --bsm data/Ieee1609Dot2Data/{filename}
 ```
 4. Reports will be generated to `output/` directory
 
