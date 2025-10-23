@@ -27,7 +27,7 @@ gcc -I ../asn1c/skeletons/ -DPDU={PDU_NAME} -fPIC -shared -o {PDU_NAME}.so -lm *
 
 ## Misbehavior Detection Workflow
 
-1. Generate shared library for SaeJ3287Data PDU from SAE J3287 ASN.1 following instructions in above section.
+1. If not already present, generate shared library for SaeJ3287Data PDU from SAE J3287 ASN.1 following instructions in above section.
 2. Provide a COER-encoded IEEE1609Dot2Data file in `data/Ieee1609Dot2Data/`.
 3. Run detection:
 ```
