@@ -1,0 +1,33 @@
+{
+ "content": {
+  "signedData": {
+   "hashId": "sha256",
+   "signature": {
+    "ecdsaNistP256Signature": {
+     "rSig": {
+      "compressed-y-0": "ed7018e05360ed52114b1cd7fc0a6b8c494f7869828b06edd114a22d6dcaa80a"
+     },
+     "sSig": "09e4586d489d7d2d2b50cc35e7655e6298c84ef58f4554d17458d1be9166d990"
+    }
+   },
+   "signer": {
+    "digest": "e6dd78930559cae3"
+   },
+   "tbsData": {
+    "headerInfo": {
+     "generationTime": 509319924892216,
+     "psid": 32
+    },
+    "payload": {
+     "data": {
+      "content": {
+       "unsecuredData": "001280a35fe73c47d19362a716192d96743ccbab4d0383886d70005bf2fd7ca7eeb08000800868122801f0c1a100034002affc15d4100ad3f97b015fffc100a33f987015fffc100bdbf885017fffc10081bf96d011fffc0ff0abf917013fffc0faf53ed6f01bfffc0f9f7be4a701bfffc0fa2f3c86b01ffffc0f9adbc19501ffffc0f8563bddb01dfffc0efcabbc63023fffc0e83c3c05d02ffffc0e6173c3ff019fffcfffec80"
+      },
+      "protocolVersion": 3
+     }
+    }
+   }
+  }
+ },
+ "protocolVersion": 3
+}
