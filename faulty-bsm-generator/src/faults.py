@@ -8,13 +8,16 @@ import numpy as np
 import copy
 
 class FaultGenerators:
-    def __init__(self, include_gens=['individual', 'security']):
+    def __init__(self, include_gens=['none', 'individual', 'security']):
         all_faults = self.load_faults()
 
         filtered_faults = []
         for fault in all_faults:
+            if fault.type == "none": filtered_faults.append(fault)
             if fault.type in include_gens: filtered_faults.append(fault)
             if fault.name in include_gens: filtered_faults.append(fault)
+        
+        
 
         if len(filtered_faults) == 0: raise Exception("No Faults (type / name) matched the criteria in {FAULT_LIST}"\
                                                       .format(FAULT_LIST=''.join(include_gens)))
@@ -23,6 +26,7 @@ class FaultGenerators:
 
     def load_faults(self):
         faults = []
+        faults.append(Fault('no_fault', 'none', no_fault))
         # individual misbehaviors
         faults.append(Fault('perturb_acceleration', 'individual', perturb_acceleration))
         #faults.append(Fault('perturb_security_messageId', 'individual', perturb_security_messageId))
@@ -50,7 +54,19 @@ class Fault:
 '''
 misbehavior perturbation functions
 -----------------------------------
+'''
 
+def no_fault(bsm):
+    '''
+    no_fault
+
+    no values changed. BSM is presumed valid.
+    '''
+
+    return bsm, "no fault"
+
+
+'''
 (I) INDIVIDUAL MISBEHAVIORS
 '''
 def perturb_acceleration(bsm, accel_threshold=bsm_utils.ACCELERATION_THRESHOLD, accel_max=bsm_utils.ACCELERATION_MAX):
@@ -60,7 +76,7 @@ def perturb_acceleration(bsm, accel_threshold=bsm_utils.ACCELERATION_THRESHOLD, 
     set the longitudinal acceleration to some random value exceeding the valid threshold
     '''
     # parse the bsm object
-    accel_val = 2002 #np.random.randint(2001, 2100)
+    accel_val = np.random.randint(2001, 2020)
     core_data = bsm['value'][1]['coreData']
 
     cur_long_accel = core_data['accelSet']["long"]

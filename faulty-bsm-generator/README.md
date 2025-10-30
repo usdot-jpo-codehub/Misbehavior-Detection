@@ -1,12 +1,23 @@
 ### Faulty-BSM Generator
 
 ### Usage Instructions
+#### Requirements
+To run Faulty-Bsm-Generator, install the python requirements in /requirements.txt by creating a virtual envrionment and installing libraries via pip. In the terminal navigate to the root of this repository (./Misbehavior-Detection/faulty-bsm-generator):
+```
+python3 -m venv ./venv
+pip install -r requirements.txt
+```
+
+#### Scripts and Running Faulty-BSM-Generator 
 The primary test script for running Faulty-BSM Generator is ```src/test_faultybsm.py``` which enables a number of parameters for evaluation, including the **output codec** (--output_codec), **filename** (--input_file), and the number of random repitions per file (to generate new faults, --repeat_files). For example, reading an IeeeDot2Data object in ```data/example_IEEE/test_IeeeDot2Data.bin```, perturbing it with one random fault, and writing it's MessageFrame in JSON codec:
 
 
 ```python3 src/test_faultybsm.py --input_file test_IeeeDot2Data.bin --repeat_files 1 --output_codec jer --object_out MessageFrame```
 
 where the output (in JER) will be written to ```output/``` and a corresponding line will be appended to ```output/log.csv``` (see below for more information). 
+
+#### Note on Header Bytes
+Validation of Faulty-BSM-Generator depended on test BSMs which included 26 header bytes prepended to the MessageFrame structure (see 'decode_bsm' in ./src/bsm_encoder.py). Therefore, BSMs which do not include these header bytes may cause failure in this decoding function.  
 
 #### Random Seeds
 Additionally, users can adjust the numpy random seed using ```--seed```, as in the following example

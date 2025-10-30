@@ -1,25 +1,11 @@
 bsm_id,fault_id,fault_desc,date
-0,0,perturb_acceleration: replaced longitudinal acceleration -1995 value with illegal value 2063,2025-09-29 11:36:22.124830
-2,0,perturb_acceleration: replaced longitudinal acceleration -1995 value with illegal value 2063,2025-09-29 11:38:05.003160
-3,0,perturb_acceleration: replaced longitudinal acceleration -1995 value with illegal value 2095,2025-09-29 11:38:05.004025
-4,0,perturb_acceleration: replaced longitudinal acceleration -1995 value with illegal value 2083,2025-09-29 11:38:05.004443
-5,0,perturb_acceleration: replaced longitudinal acceleration -1995 value with illegal value 2095,2025-09-29 11:38:05.004789
-6,0,perturb_acceleration: replaced longitudinal acceleration -1995 value with illegal value 2077,2025-09-29 11:38:05.005091
-7,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2063,2025-10-06 14:19:03.698268
-8,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2063,2025-10-09 13:55:52.630363
-9,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2000,2025-10-14 10:44:38.069662
-10,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-14 10:45:35.612412
-11,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-15 15:22:18.227598
-12,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-15 15:22:52.306465
-13,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-20 12:39:39.908298
-14,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-20 13:20:24.729017
-15,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-20 13:20:29.987977
-16,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-23 13:52:17.082800
-17,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-23 16:56:51.155425
-18,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-23 16:59:55.334394
-19,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-23 17:00:21.126640
-20,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-27 10:52:13.717525
-21,0,perturb_security_message_id_inc_with_header_info: set messageId to 18 from 20,2025-10-27 23:27:17.551579
-22,0,perturb_security_header_inc_with_security_profile: removed generationTime from security headerInfo,2025-10-27 23:27:30.856547
-23,0,perturb_security_header_psid_inc_with_certificate: set psid in appPermissions to 51 from 32,2025-10-27 23:28:37.908828
-24,0,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-27 23:39:41.741158
+0,0,no fault,2025-10-30 16:08:21.508872
+1,0,no fault,2025-10-30 16:08:21.509400
+2,0,no fault,2025-10-30 16:08:21.509674
+3,0,no fault,2025-10-30 16:08:21.509840
+4,1,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2005,2025-10-30 16:08:21.509995
+5,0,no fault,2025-10-30 16:08:21.510145
+6,1,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2010,2025-10-30 16:08:21.510293
+7,1,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2002,2025-10-30 16:08:21.510451
+8,0,no fault,2025-10-30 16:08:21.510599
+9,1,perturb_acceleration: replaced longitudinal acceleration -6 value with illegal value 2011,2025-10-30 16:08:21.510744

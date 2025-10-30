@@ -60,8 +60,8 @@ class FaultyBsmGenerator:
                 encoded_bsm = encoder.encode_bsm(cur_bsm, 'per')
                 msg_out.msg['content'][1]['tbsData']['payload']['data']['content'] = ('unsecuredData', encoded_bsm)
 
-                # sign Ieee1609Dot2Data object
-                msg_out.msg = self.sign_Ieee1609Dot2Data(msg_out.msg)
+                # TODO: sign Ieee1609Dot2Data object
+                #msg_out.msg = self.sign_Ieee1609Dot2Data(msg_out.msg)
                 msg_out.msg = encoder.encode_IEEE(msg_out.msg, output_codec)
 
             else: raise Exception("Output PDU is not in [MessageFrame, IeeeDot2Data]")
@@ -104,7 +104,8 @@ class FaultyBsmGenerator:
             IeeeDot2Data = bsm.msg
             certificate = self.encoder.parse_certificate(self.security)
             bsm_data = self.encoder.parse_bsm(IeeeDot2Data)
-            if fault.type == 'individual':
+
+            if fault.type == 'individual' or fault.type == "none":
                 _, fault_msg = fault.func(bsm_data)
             elif fault.type == 'security':
                 _, fault_msg = fault.func(IeeeDot2Data, certificate, bsm_data)
