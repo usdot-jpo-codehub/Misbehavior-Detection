@@ -14,15 +14,20 @@ src/                  # Detection and generation logic
 
 ## Building ASN.1 Shared Libraries
 
-1. Generate C from ASN using asn1c (adjust skeleton path):
+All required libraries to run this tool are included in this repository. However, if you would like to build your own libraries, you may do so with the following instructions. 
+
+Note: ASN.1 definition modifications removing parameterization may be required for compatibility with asn1c library.
+
+1. Install open-source asn1c library from: http://github.com/vlm/asn1c.
+2. Generate C files from ASN.1 using asn1c (adjust skeleton path):
 ```
 asn1c -fcompound-names -S ../asn1c/skeletons ../YOUR_ASN_DIR/*.asn
 ```
-2. Compile to shared object:
+3. Compile to shared object:
 ```
 gcc -I ../asn1c/skeletons/ -DPDU={PDU_NAME} -fPIC -shared -o {PDU_NAME}.so -lm *.c
 ```
-3. Place `.so` in `libs/`.
+4. Place `.so` in `libs/`.
 
 
 ## Misbehavior Detection Workflow
