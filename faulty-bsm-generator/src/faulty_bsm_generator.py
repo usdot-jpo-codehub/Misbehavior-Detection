@@ -29,7 +29,7 @@ class FaultyBsmGenerator:
         self.log = FaultLog()
         self.cache = []
         self.encoder = EncoderDecoder(IEEE_spec, DRSC_spec)
-        self.security = load_security(security)
+        #self.security = load_security(security)
 
         self.mbs = FaultGenerators(include_gens=[fault])
         np.random.seed(np_seed)
@@ -102,12 +102,13 @@ class FaultyBsmGenerator:
             fault = valid_mbs[rand_mb_ind]
             
             IeeeDot2Data = bsm.msg
-            certificate = self.encoder.parse_certificate(self.security)
+            certificate = None #self.encoder.parse_certificate(self.security)
             bsm_data = self.encoder.parse_bsm(IeeeDot2Data)
 
             if fault.type == 'individual' or fault.type == "none":
                 _, fault_msg = fault.func(bsm_data)
             elif fault.type == 'security':
+                raise Exception("Securitty misbehaviors are not yet supported.")
                 _, fault_msg = fault.func(IeeeDot2Data, certificate, bsm_data)
 
             bsm.mb = rand_mb_ind
