@@ -57,7 +57,7 @@ if __name__ == '__main__':
                         type = int, default=2024,
                         help ='numpy random seed for predictable randomness')
     parser.add_argument('-m', '--fault',
-                        type = str, default="perturb_acceleration",
+                        type = str, default="perturb_heading",
                         help ='fault to apply to BSM')
     parser.add_argument('-k', '--security',
                         type = str, default="23A",

@@ -33,6 +33,7 @@ Faulty-BSM-generator reads an encoded BSM, modifies it to include a randomly gen
 - **perturb_brake_status**: set to value greater than 5 digits OR (randomly decided) set digit to neither 1 nor 0
 - **perturb_heading**: set heading value some integer greater than 360 degrees
 
+
 A misbehavior is selected at random (via a random seed process to enable reproduction), the BSM is modified, and a fault-log (output/log.csv) is appended to with the following information:
 - **BSM_id**: id of the new BSM. The modified BSM will be output with the following format (output/{encoded_out_BSM_id})
 - **fault_id**: id of the fault/misbehavior (*perturb_acceleration*, etc.) assigned to the BSM
