@@ -10,13 +10,12 @@ class AccelerationValueOutOfRange(ReportGenerator):
         self.obs_id = OBS_ID
         self.detections = [] 
  
-    ############################################################
-    # accelerationValueOutOfRange
     # DESC: coreData.accelSet.long, considered as an integer, encodes a value greater than 4002.
-    def analyze_bsm(self, bsm, bsm_hex):
+    def analyze_bsm(self, ieee, bsm, ieee_data):
         acceleration = bsm["value"]["BasicSafetyMessage"]["coreData"]["accelSet"]["long"]
-        print("Accel:" + str(acceleration))
         if acceleration > ACCELERATION_THRESHOLD: 
-            self.detections.append((self.tgt_id, self.obs_id, bsm_hex))
+            print(f"DETECTION: Acceleration value out of range detected: {acceleration}")
+            self.detections.append((self.tgt_id, self.obs_id, ieee_data))
+        else:
+            print(f"No Acceleration value out of range detected: {acceleration}")
         return self.detections
-    ############################################################
