@@ -48,16 +48,16 @@ if __name__ == '__main__':
                         type = str, default='jer',
                         help ='codec to encode file to (COER, PER, JER)')
     parser.add_argument('-c', '--repeat_files',
-                        type = int, default=1,
+                        type = int, default=10,
                         help ='number of times to copy incoming file')
     parser.add_argument('-t', '--object_out',
                         type = str, default='IeeeDot2Data',
                         help ='output IeeeDot2Data or MessageFrame')
     parser.add_argument('-s', '--seed',
-                        type = int, default=2025,
+                        type = int, default=2024,
                         help ='numpy random seed for predictable randomness')
     parser.add_argument('-m', '--fault',
-                        type = str, default="perturb_acceleration",
+                        type = str, default="perturb_heading",
                         help ='fault to apply to BSM')
     parser.add_argument('-k', '--security',
                         type = str, default="23A",
