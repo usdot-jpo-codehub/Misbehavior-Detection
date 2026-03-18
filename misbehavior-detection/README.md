@@ -44,4 +44,4 @@ Use `--debug` to emit JSON snapshots of the internal report structure.
 
 ## Supported Misbehaviors 
 
-This tool currently supports detection and reporting of the `LongAcc-ValueTooLarge` misbehavior type with additional planned support for all other SAE J3287-specified misbehavior types. See [src/misbehaviors/README.md](src/misbehaviors/README.md) for more information.
+This tool currently supports detection and reporting of all SAE J3287-specified misbehavior types. See [src/misbehaviors/README.md](src/misbehaviors/README.md) for more information.
