@@ -1,32 +1,39 @@
-from typing import List, Dict
-from misbehaviors.bsm_utils import BSM_VALID_ID
 from misbehaviors.reportGenerator import ReportGenerator
 
-class SecurityMessageIfIncWithHeaderInfo(ReportGenerator):
+TGT_ID = 2
+OBS_ID = 1
+
+class SecurityMessageIdIncWithHeaderInfo(ReportGenerator):
     def __init__(self):
-        reports = []
-        target_class = "security" 
+        self.tgt_id = TGT_ID
+        self.obs_id = OBS_ID
+        self.detections = [] 
     
-    # securityHeaderIncWithSecurityProfile specifics functions
-    ############################################################
-    def securityMessageIfIncWithHeaderInfo(self, bsm : Dict):
-        bsm_data = bsm['value'][1]['coreData']
-        msg_id = bsm_data['messageId']
+    '''
+    The messageId field of the MessageFrame as defined in SAE J2735 is inconsistent
+    with the security headerInfo i.e. the messageId is not equal to basicSafetyMessage.
+    '''
+    def analyze_bsm(self, ieee, bsm, ieee_data):
+        header_info = (
+            ieee.get("content", {})
+                .get("signedData", {})
+                .get("tbsData", {})
+                .get("headerInfo", {})
+        )
+        psid = header_info.get("psid")
 
-        if msg_id != 20:
-            evidence = msg_id
-            self.reports.append(evidence)
-         
-    ############################################################
+        message_id = bsm.get("messageId")
 
-    def generateMbr():
-        return 
+        inconsistent = False
+        if psid == 32 and message_id != 20:
+            inconsistent = True
+        elif psid is not None and psid != 32 and message_id == 20:
+            inconsistent = True
 
-    # run_all_checks( List[JSON] ) => None
-    # DESC: for every message, check for misbehavior
-    def run_all_checks(self, bsm_jsons : List):
-        for bsm in bsm_jsons:
-            try: self.securityMessageIfIncWithHeaderInfo(bsm)
-            except Exception as e: print(e) 
-    
-    
+        if inconsistent:
+            print(f"DETECTION: MessageId {message_id} inconsistent with security headerInfo PSID {psid}")
+            self.detections.append((self.tgt_id, self.obs_id, ieee_data))
+        else:
+            print("No inconsistency: MessageId aligns with security headerInfo PSID")
+
+        return self.detections

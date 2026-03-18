@@ -50,6 +50,29 @@ class ReportGenerator:
         total_tai_seconds = time_difference.total_seconds() + leap_seconds
         tai_microseconds = int(total_tai_seconds * 1_000_000)
 
+        observation_type = ""
+        observation = ""
+
+        if target_id == 5:
+            observation_type = "longAcc"
+            observation = "LongAcc-ValueTooLarge"
+        elif target_id == 2:
+            observation_type = "security"
+            if observation_id == 1:
+                observation = "Security-MessageIdIncWithHeaderInfo"
+            elif observation_id == 2:
+                observation = "Security-HeaderIncWithSecurityProfile"
+            elif observation_id == 3:
+                observation = "Security-HeaderPsidIncWithCertificate"
+            elif observation_id == 4:
+                observation = "Security-MessageIncWithSsp"
+            elif observation_id == 5:
+                observation = "Security-HeaderTimeOutsideCertificateValidity"
+            elif observation_id == 6:
+                observation = "Security-MessageLocationOutsideCertificateValidity"
+            elif observation_id == 7:
+                observation = "Security-HeaderLocationOutsideCertificateValidity"
+
         self.report = {
             "SaeJ3287Data": {
                 "version": 1,
@@ -70,11 +93,11 @@ class ReportGenerator:
                                             {
                                                 "tgtId": target_id,
                                                 "observations": {
-                                                    "longAcc": [
+                                                    observation_type: [
                                                         {
                                                             "obsId": observation_id,
                                                             "obs": {
-                                                                "LongAcc-ValueTooLarge": {}
+                                                                observation: {}
                                                             },
                                                         }
                                                     ]

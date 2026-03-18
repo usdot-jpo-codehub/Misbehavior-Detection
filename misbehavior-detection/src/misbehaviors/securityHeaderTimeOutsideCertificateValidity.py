@@ -1,40 +1,53 @@
-import pandas 
-from datetime import datetime
-from typing import List, Dict
 from misbehaviors.reportGenerator import ReportGenerator
 
+TGT_ID = 2
+OBS_ID = 5
 
 class SecurityHeaderTimeOutsideCertificate(ReportGenerator):
     def __init__(self):
-        self.reports = []
-        self.target_class = "security"
+        self.tgt_id = TGT_ID
+        self.obs_id = OBS_ID
+        self.detections = [] 
     
-    # securityHeaderIncWithSecurityProfile specifics functions
-    ############################################################
-    def securityHeaderTimeOutsideCertificate(self, certificate):
-        signed_data = certificate["signedData"]
-        signed_time = datetime.fromtimestamp(signed_data["headerInfo"]["generationTime"])
-        
-        cert_start_t = datetime.fromtimestamp(certificate["certificate"]['validityPeriod']['start'])
-        cert_duration =  datetime.hour(certificate["certificate"]['validityPeriod']['duration'])
-        cert_end_t = cert_start_t + cert_duration
+    '''
+    The generationTime in the security headerInfo is outside the validity 
+    period of the certificate.
+    '''
+    def analyze_bsm(self, ieee, bsm, ieee_data):
+        header_info = (
+            ieee.get("content", {})
+                .get("signedData", {})
+                .get("tbsData", {})
+                .get("headerInfo", {})
+        )
+        gen_time = header_info.get("generationTime")
 
-        if signed_time < cert_start_t or signed_time > cert_end_t:
-            evidence = {"header" : signed_time, "certificate" : certificate["certificate"]['validityPeriod']}
-            self.reports.append(evidence)
-    ############################################################
+        signer = (
+            ieee.get("content", {})
+                .get("signedData", {})
+                .get("signer", {})
+        )
+        certificates = signer.get("certificate", [])
+        start = None
+        end = None
+        if isinstance(certificates, list) and certificates:
+            tbs_cert = certificates[0].get("toBeSigned", {})
+            validity = tbs_cert.get("validityPeriod", {})
+            start = validity.get("start")
+            duration = validity.get("duration").get("hours")
+            if isinstance(start, int) and isinstance(duration, int):
+                end = start + duration
 
-    def generateMbr(self):
-        report = None
-        # TODO: add encoding of reports
-        return report
+        if not isinstance(gen_time, int):
+            print("No generationTime in headerInfo; cannot validate against certificate")
+        elif start is None or end is None:
+            print("No certificate validityPeriod found; cannot validate")
+        else:
+            outside = gen_time < start or gen_time > end
+            if outside:
+                print(f"DETECTION: Header generationTime outside certificate validity: {gen_time} not in [{start}, {end}]")
+                self.detections.append((self.tgt_id, self.obs_id, ieee_data))
+            else:
+                print("No inconsistency: header generationTime within certificate validity")
 
-
-    # run_all_checks( List[JSON] ) => None
-    # DESC: for every message, check for misbehavior
-    def run_all_checks(self, bsm_jsons : List):
-        for bsm in bsm_jsons:
-            try: self.securityHeaderIncWithSecurityProfile(bsm)
-            except Exception as e: print(e) 
-    
-    
+        return self.detections

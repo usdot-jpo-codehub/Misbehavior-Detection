@@ -29,12 +29,25 @@ def load_BSM(filepath):
     td = get_td(lib, "MessageFrame")
     sptr, rval = decoder_utils.decode_uper(lib, td, message_frame)
     # Debug
-    # print(f"UPER decode: code={rval.code} consumed={rval.consumed}")
+    print(f"UPER decode: code={rval.code} consumed={rval.consumed}")
+    if rval.code != 0:
+        raise SystemExit(f"UPER decode failed")
+    message_frame_jer = encoder_utils.encode_jer(lib, td, sptr)
+    message_frame = json.loads(message_frame_jer)
+    
+    basicsafety_hex = message_frame.get("value", {})
+    basicsafety = bytes.fromhex(basicsafety_hex)
+    td = get_td(lib, "BasicSafetyMessage")
+    sptr, rval = decoder_utils.decode_uper(lib, td, basicsafety)
+    # Debug
+    print(f"UPER decode: code={rval.code} consumed={rval.consumed}")
     if rval.code != 0:
         raise SystemExit(f"UPER decode failed")
     bsm_jer = encoder_utils.encode_jer(lib, td, sptr)
     bsm = json.loads(bsm_jer)
-    return ieee_dict, bsm, data_hex
+    bsm = {"BasicSafetyMessage": bsm}
+    message_frame['value'] = bsm
+    return ieee_dict, message_frame, data_hex
 
 
 def launch():
