@@ -14,7 +14,7 @@ OBS_TITLES = { "acceleration-ValueOutofRange" : accelerationValueOutOfRange.Acce
                  "security-HeaderIncWithSecurityProfile" : securityHeaderIncWithSecurityProfile.SecurityHeaderIncWithSecurityProfile(), \
                  "security-HeaderLocationOutsideCertificateValidity" : securityHeaderLocationOutsideCertificateValidity.SecurityHeaderLocationOutsideCertificateValidity(), \
                  "security-HeaderPsidIncWithCertificate": securityHeaderPsidIncWithCertificate.SecurityHeaderPsidIncWithCertificate(), \
-                 "security-HeaderTimeOutsideCertificateValidity.py": securityHeaderTimeOutsideCertificateValidity.SecurityHeaderTimeOutsideCertificate(), \
-                 "security-MessageIdIncWithHeaderInfo": securityMessageIdIncWithHeaderInfo.SecurityMessageIfIncWithHeaderInfo(),\
+                 "security-HeaderTimeOutsideCertificateValidity": securityHeaderTimeOutsideCertificateValidity.SecurityHeaderTimeOutsideCertificate(), \
+                 "security-MessageIdIncWithHeaderInfo": securityMessageIdIncWithHeaderInfo.SecurityMessageIdIncWithHeaderInfo(),\
                  "security-MessageIncWithSsp": securityMessageIncWithSsp.SecurityMessageIncWithSsp(), \
                  "security-MessageLocationOutsideCertificateValidity": securityMessageLocationOutsideCertificateValidity.SecurityMessageLocationOutsideCertificateValidity()}
