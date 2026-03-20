@@ -38,13 +38,27 @@ class EncoderDecoder:
             header = parse_header(header_bytes)
             # Do something with header if needed
         
+<<<<<<< HEAD
         # Decode bsm into ASN structure
         bsm_bytes = encoded_file[HEADER_BYTES:]
+=======
+        #ieee1609Dot2Data = IEEE1609dot2.Ieee1609Dot2Data
+        #ieee1609Dot2Data.from_coer_ws(encoded_file)
+
+        #print(IEEE1609dot2.Ieee1609Dot2Data.to_jer(ieee1609Dot2Data.get_val()))
+
+        # Decode bsm into ASN structure
+        #bsm_bytes = encoded_file[HEADER_BYTES:]
+>>>>>>> 6613020 (added faults and signed messages)
         #bsm = self.parse_bsm(bsm_bytes)
 
         # Assuming IEEE 1609.2 and J2735 WAVE message definitions
         ieee1609Dot2Data = IEEE1609dot2.Ieee1609Dot2Data
+<<<<<<< HEAD
         ieee1609Dot2Data.from_coer_ws(bsm_bytes)
+=======
+        ieee1609Dot2Data.from_coer_ws(encoded_file)
+>>>>>>> 6613020 (added faults and signed messages)
 
         print(IEEE1609dot2.Ieee1609Dot2Data.to_jer(ieee1609Dot2Data.get_val()))
         return ieee1609Dot2Data.get_val()
@@ -70,6 +84,10 @@ class EncoderDecoder:
         spec.set_val(decoded_file)
 
         encode_func = None
+<<<<<<< HEAD
+=======
+        codec = codec.lower()
+>>>>>>> 6613020 (added faults and signed messages)
         if codec == 'per': encode_func = spec.to_uper_ws
         elif codec == 'der': encode_func = spec.to_der_ws
         elif codec == 'jer': encode_func = spec.to_jer
@@ -91,11 +109,20 @@ class EncoderDecoder:
         # return bsm
         return bsm.get_val()
     
+<<<<<<< HEAD
     def parse_certificate(self, certificate):
         IEEE = self.IEEE_spec
 
         cert = IEEE.Certificate
         cert.from_coer(certificate['cert_coer'])
+=======
+    def parse_certificate(self, signer):
+        certificate_coer = signer.cert_data['cert_coer']
+        IEEE = self.IEEE_spec
+
+        cert = IEEE.Certificate
+        cert.from_coer(certificate_coer)
+>>>>>>> 6613020 (added faults and signed messages)
         # return bsm
         return cert.get_val()
 

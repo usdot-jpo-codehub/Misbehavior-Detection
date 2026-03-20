@@ -6,8 +6,14 @@ read encoded bsms, decode them, then randomly perturb
 # internal imports 
 from constants import DATA_DIR, OUTPUT_DIR
 from fault_log import FaultLog
+<<<<<<< HEAD
 from bsm_utils import BSM, load_security
 from bsm_encoder import EncoderDecoder
+=======
+from bsm_utils import BSM, load_security, expansion_scalar_aes_dm
+from bsm_encoder import EncoderDecoder
+from data_signer import DataSigner
+>>>>>>> 6613020 (added faults and signed messages)
 from faults import FaultGenerators
 # type imports
 from datetime import datetime
@@ -16,6 +22,7 @@ from os import path
 # data processing imports
 import numpy as np
 
+<<<<<<< HEAD
 # cryptography imports
 import hashlib
 from cryptography.hazmat.primitives import hashes, serialization
@@ -30,6 +37,15 @@ class FaultyBsmGenerator:
         self.cache = []
         self.encoder = EncoderDecoder(IEEE_spec, DRSC_spec)
         #self.security = load_security(security)
+=======
+
+class FaultyBsmGenerator:
+    def __init__(self, IEEE_spec, DRSC_spec, np_seed, fault, bundle, validate):
+        self.log = FaultLog()
+        self.cache = []
+        self.encoder = EncoderDecoder(IEEE_spec, DRSC_spec)
+        self.signer = DataSigner(bundle, self.encoder, validate=validate)
+>>>>>>> 6613020 (added faults and signed messages)
 
         self.mbs = FaultGenerators(include_gens=[fault])
         np.random.seed(np_seed)
@@ -61,7 +77,11 @@ class FaultyBsmGenerator:
                 msg_out.msg['content'][1]['tbsData']['payload']['data']['content'] = ('unsecuredData', encoded_bsm)
 
                 # TODO: sign Ieee1609Dot2Data object
+<<<<<<< HEAD
                 #msg_out.msg = self.sign_Ieee1609Dot2Data(msg_out.msg)
+=======
+                msg_out.msg = self.signer.sign_Ieee1609Dot2Data(msg_out.msg, encoder)
+>>>>>>> 6613020 (added faults and signed messages)
                 msg_out.msg = encoder.encode_IEEE(msg_out.msg, output_codec)
 
             else: raise Exception("Output PDU is not in [MessageFrame, IeeeDot2Data]")
@@ -102,13 +122,21 @@ class FaultyBsmGenerator:
             fault = valid_mbs[rand_mb_ind]
             
             IeeeDot2Data = bsm.msg
+<<<<<<< HEAD
             certificate = None #self.encoder.parse_certificate(self.security)
+=======
+            certificate = self.encoder.parse_certificate(self.signer)
+>>>>>>> 6613020 (added faults and signed messages)
             bsm_data = self.encoder.parse_bsm(IeeeDot2Data)
 
             if fault.type == 'individual' or fault.type == "none":
                 _, fault_msg = fault.func(bsm_data)
             elif fault.type == 'security':
+<<<<<<< HEAD
                 raise Exception("Securitty misbehaviors are not yet supported.")
+=======
+                #raise Exception("Securitty misbehaviors are not yet supported.")
+>>>>>>> 6613020 (added faults and signed messages)
                 _, fault_msg = fault.func(IeeeDot2Data, certificate, bsm_data)
 
             bsm.mb = rand_mb_ind
@@ -118,6 +146,7 @@ class FaultyBsmGenerator:
         return perturbed_bsms
     
 
+<<<<<<< HEAD
     def sign_Ieee1609Dot2Data(self, IeeeDot2Data):
         """
         Steps for signing Ieee1609Dot2Data structures:
@@ -182,6 +211,8 @@ class FaultyBsmGenerator:
         IeeeDot2Data['content'][1]['signer'] = ('digest', hashed_id_8(cert_coer))
         return IeeeDot2Data
 
+=======
+>>>>>>> 6613020 (added faults and signed messages)
     '''
     def write_bsms
 

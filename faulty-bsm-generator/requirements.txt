@@ -1,3 +1,11 @@
 numpy
 pycrate
+<<<<<<< HEAD
 cryptography
+=======
+cryptography
+kafka-python
+zstandard
+geopandas
+pytest
+>>>>>>> 6613020 (added faults and signed messages)

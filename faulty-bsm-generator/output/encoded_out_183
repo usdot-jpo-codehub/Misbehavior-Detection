@@ -1,0 +1,95 @@
+{
+ "content": {
+  "signedData": {
+   "hashId": "sha256",
+   "signature": {
+    "ecdsaNistP256Signature": {
+     "rSig": {
+      "x-only": "ad58c2589589da71b557911c7128880a8be219f77a24ea0b538219fa41005096"
+     },
+     "sSig": "633b4bdb1e15e3481a8ff1fb5f88250bd9d19361bbd8e7c564fcac2bac270642"
+    }
+   },
+   "signer": {
+    "certificate": [
+     {
+      "issuer": {
+       "sha256AndDigest": "1631afb5fc255d0f"
+      },
+      "toBeSigned": {
+       "appPermissions": [
+        {
+         "psid": 32
+        },
+        {
+         "psid": 35
+        },
+        {
+         "psid": 38
+        },
+        {
+         "psid": 127
+        },
+        {
+         "psid": 270549118
+        }
+       ],
+       "cracaId": "5e6f5b",
+       "crlSeries": 1,
+       "id": {
+        "linkageData": {
+         "group-linkage-value": {
+          "jValue": "00000000",
+          "value": "acc622359ac8cb546d"
+         },
+         "iCert": 584,
+         "linkage-value": "acc622359ac8cb546d"
+        }
+       },
+       "region": {
+        "identifiedRegion": [
+         {
+          "countryOnly": 840
+         }
+        ]
+       },
+       "validityPeriod": {
+        "duration": {
+         "hours": 169
+        },
+        "start": 700822805
+       },
+       "verifyKeyIndicator": {
+        "reconstructionValue": {
+         "compressed-y-0": "6bf16c2310b88e1017b66d41794971d8c1e02a316ad8f7f96ffae38291e8d879"
+        }
+       }
+      },
+      "type": "implicit",
+      "version": 3
+     }
+    ]
+   },
+   "tbsData": {
+    "headerInfo": {
+     "generationLocation": {
+      "elevation": 69,
+      "latitude": 56,
+      "longitude": 79
+     },
+     "generationTime": 701032462315492,
+     "psid": 32
+    },
+    "payload": {
+     "data": {
+      "content": {
+       "unsecuredData": "001480a35fe73c47d19362a716192d96743ccbab4d0383886d70005bf2fd7ca7eeb08000800868122801f0c1a100034002affc15d4100ad3f97b015fffc100a33f987015fffc100bdbf885017fffc10081bf96d011fffc0ff0abf917013fffc0faf53ed6f01bfffc0f9f7be4a701bfffc0fa2f3c86b01ffffc0f9adbc19501ffffc0f8563bddb01dfffc0efcabbc63023fffc0e83c3c05d02ffffc0e6173c3ff019fffcfffec80"
+      },
+      "protocolVersion": 3
+     }
+    }
+   }
+  }
+ },
+ "protocolVersion": 3
+}

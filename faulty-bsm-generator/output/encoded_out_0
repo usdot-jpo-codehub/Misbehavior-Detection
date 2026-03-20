@@ -1,0 +1,139 @@
+{
+ "messageId": 20,
+ "value": {
+  "coreData": {
+   "accelSet": {
+    "lat": 30,
+    "long": 2002,
+    "vert": 49,
+    "yaw": 1
+   },
+   "accuracy": {
+    "orientation": 4314,
+    "semiMajor": 7,
+    "semiMinor": 7
+   },
+   "angle": 127,
+   "brakes": {
+    "abs": "unavailable",
+    "auxBrakes": "unavailable",
+    "brakeBoost": "off",
+    "scs": "unavailable",
+    "traction": "unavailable",
+    "wheelBrakes": "80"
+   },
+   "elev": 18074,
+   "heading": 23538,
+   "id": "9cf11f46",
+   "lat": 411519323,
+   "long": -1046567016,
+   "msgCnt": 127,
+   "secMark": 19850,
+   "size": {
+    "length": 581,
+    "width": 208
+   },
+   "speed": 0,
+   "transmission": "unavailable"
+  },
+  "partII": [
+   {
+    "partII-Id": 0,
+    "partII-Value": {
+     "pathHistory": {
+      "crumbData": [
+       {
+        "elevationOffset": -2,
+        "latOffset": 6,
+        "lonOffset": 21,
+        "timeOffset": 2795
+       },
+       {
+        "elevationOffset": 10,
+        "latOffset": 346,
+        "lonOffset": -835,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 10,
+        "latOffset": 326,
+        "lonOffset": -829,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 11,
+        "latOffset": 379,
+        "lonOffset": -958,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 8,
+        "latOffset": 259,
+        "lonOffset": -842,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 9,
+        "latOffset": -491,
+        "lonOffset": -885,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 13,
+        "latOffset": -2582,
+        "lonOffset": -2377,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 13,
+        "latOffset": -3089,
+        "lonOffset": -3501,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 15,
+        "latOffset": -2978,
+        "lonOffset": -7115,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 15,
+        "latOffset": -3237,
+        "lonOffset": -7990,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 14,
+        "latOffset": -3924,
+        "lonOffset": -8467,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 17,
+        "latOffset": -8299,
+        "lonOffset": -8655,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 23,
+        "latOffset": -12168,
+        "lonOffset": -8146,
+        "timeOffset": 65535
+       },
+       {
+        "elevationOffset": 12,
+        "latOffset": -13266,
+        "lonOffset": -7681,
+        "timeOffset": 65535
+       }
+      ]
+     },
+     "pathPrediction": {
+      "confidence": 200,
+      "radiusOfCurve": 32767
+     }
+    }
+   }
+  ]
+ }
+}

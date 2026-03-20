@@ -1056,7 +1056,11 @@ class IEEE1609dot2:
     
     #-----< HeaderInfo >-----#
     HeaderInfo = SEQ(name='HeaderInfo', mode=MODE_TYPE)
+<<<<<<< HEAD
     _HeaderInfo_psid = INT(name='psid', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('IEEE1609dot2BaseTypes', 'Psid')))
+=======
+    _HeaderInfo_psid = INT(name='psid', mode=MODE_TYPE, tag=(0, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('IEEE1609dot2BaseTypes', 'Psid')), opt=False)
+>>>>>>> 6613020 (added faults and signed messages)
     _HeaderInfo_generationTime = INT(name='generationTime', mode=MODE_TYPE, tag=(1, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('IEEE1609dot2BaseTypes', 'Time64')), opt=True)
     _HeaderInfo_expiryTime = INT(name='expiryTime', mode=MODE_TYPE, tag=(2, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('IEEE1609dot2BaseTypes', 'Time64')), opt=True)
     _HeaderInfo_generationLocation = SEQ(name='generationLocation', mode=MODE_TYPE, tag=(3, TAG_CONTEXT_SPEC, TAG_IMPLICIT), typeref=ASN1RefType(('IEEE1609dot2BaseTypes', 'ThreeDLocation')), opt=True)
