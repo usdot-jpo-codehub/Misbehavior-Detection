@@ -1,0 +1,95 @@
+{
+ "content": {
+  "signedData": {
+   "hashId": "sha256",
+   "signature": {
+    "ecdsaNistP256Signature": {
+     "rSig": {
+      "x-only": "ed9a356eb108c623010de102412c5db7248866f9ae75fa24a62f140e8670abdf"
+     },
+     "sSig": "041617f127e6a96c5737c5b769043d5e02089accc73393df72c610903cdd8630"
+    }
+   },
+   "signer": {
+    "certificate": [
+     {
+      "issuer": {
+       "sha256AndDigest": "1631afb5fc255d0f"
+      },
+      "toBeSigned": {
+       "appPermissions": [
+        {
+         "psid": 32
+        },
+        {
+         "psid": 35
+        },
+        {
+         "psid": 38
+        },
+        {
+         "psid": 127
+        },
+        {
+         "psid": 270549118
+        }
+       ],
+       "cracaId": "5e6f5b",
+       "crlSeries": 1,
+       "id": {
+        "linkageData": {
+         "group-linkage-value": {
+          "jValue": "00000000",
+          "value": "acc622359ac8cb546d"
+         },
+         "iCert": 584,
+         "linkage-value": "acc622359ac8cb546d"
+        }
+       },
+       "region": {
+        "identifiedRegion": [
+         {
+          "countryOnly": 840
+         }
+        ]
+       },
+       "validityPeriod": {
+        "duration": {
+         "hours": 169
+        },
+        "start": 700822805
+       },
+       "verifyKeyIndicator": {
+        "reconstructionValue": {
+         "compressed-y-0": "6bf16c2310b88e1017b66d41794971d8c1e02a316ad8f7f96ffae38291e8d879"
+        }
+       }
+      },
+      "type": "implicit",
+      "version": 3
+     }
+    ]
+   },
+   "tbsData": {
+    "headerInfo": {
+     "generationLocation": {
+      "elevation": 0,
+      "latitude": 51,
+      "longitude": -92
+     },
+     "generationTime": 701032524173243,
+     "psid": 32
+    },
+    "payload": {
+     "data": {
+      "content": {
+       "unsecuredData": "0014265fe73c47d19362a716192d96743ccbab4d0383886d70005bf2fd7ca7eeb08000800868122808"
+      },
+      "protocolVersion": 3
+     }
+    }
+   }
+  }
+ },
+ "protocolVersion": 3
+}

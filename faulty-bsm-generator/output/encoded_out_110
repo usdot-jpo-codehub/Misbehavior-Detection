@@ -1,0 +1,89 @@
+{
+ "content": {
+  "signedData": {
+   "hashId": "sha256",
+   "signature": {
+    "ecdsaNistP256Signature": {
+     "rSig": {
+      "x-only": "93079e51840f1c73a5b2b57b38c0265bbf8e3cb49a18abad47f1595ef7703ef9"
+     },
+     "sSig": "2d3d9027abe11736ed7b12aa681e94ef59bb887321aee4b1a85b43a35562eebc"
+    }
+   },
+   "signer": {
+    "certificate": [
+     {
+      "issuer": {
+       "sha256AndDigest": "1631afb5fc255d0f"
+      },
+      "toBeSigned": {
+       "appPermissions": [
+        {
+         "psid": 32
+        },
+        {
+         "psid": 35
+        },
+        {
+         "psid": 38
+        },
+        {
+         "psid": 127
+        },
+        {
+         "psid": 270549118
+        }
+       ],
+       "cracaId": "5e6f5b",
+       "crlSeries": 1,
+       "id": {
+        "linkageData": {
+         "group-linkage-value": {
+          "jValue": "00000000",
+          "value": "acc622359ac8cb546d"
+         },
+         "iCert": 584,
+         "linkage-value": "acc622359ac8cb546d"
+        }
+       },
+       "region": {
+        "identifiedRegion": [
+         {
+          "countryOnly": 840
+         }
+        ]
+       },
+       "validityPeriod": {
+        "duration": {
+         "hours": 169
+        },
+        "start": 700822805
+       },
+       "verifyKeyIndicator": {
+        "reconstructionValue": {
+         "compressed-y-0": "6bf16c2310b88e1017b66d41794971d8c1e02a316ad8f7f96ffae38291e8d879"
+        }
+       }
+      },
+      "type": "implicit",
+      "version": 3
+     }
+    ]
+   },
+   "tbsData": {
+    "headerInfo": {
+     "generationTime": 701026062799126
+    },
+    "payload": {
+     "data": {
+      "content": {
+       "unsecuredData": "001480a35fe73c47d19362a716192d96743ccbab4d0383886d70005bf2fd7ca7eeb08000800868122801f0c1a100034002affc15d4100ad3f97b015fffc100a33f987015fffc100bdbf885017fffc10081bf96d011fffc0ff0abf917013fffc0faf53ed6f01bfffc0f9f7be4a701bfffc0fa2f3c86b01ffffc0f9adbc19501ffffc0f8563bddb01dfffc0efcabbc63023fffc0e83c3c05d02ffffc0e6173c3ff019fffcfffec80"
+      },
+      "protocolVersion": 3
+     }
+    }
+   }
+  }
+ },
+ "protocolVersion": 3
+}
