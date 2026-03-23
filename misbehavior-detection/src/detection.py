@@ -21,6 +21,7 @@ def load_BSM(filepath):
         raise SystemExit(f"OER decode failed")
     ieee_jer = encoder_utils.encode_jer(lib, td, sptr)
     ieee_dict = json.loads(ieee_jer)
+    print(ieee_dict)  # Debug: print the decoded IEEE 1609.2 data structure
     
     message_frame_hex = ieee_dict["content"]["signedData"]["tbsData"]["payload"]["data"]["content"]["unsecuredData"]
     message_frame = bytes.fromhex(message_frame_hex)
@@ -90,11 +91,17 @@ def launch():
             detections = observation.analyze_bsm(ieee, bsm, ieee_hex)
             for detection in detections:
                 target_id, observation_id, evidence = detection
-                reports.append(observation.generate_report(target_id, observation_id, evidence))
+                mbr = observation.generate_report(target_id, observation_id, evidence)
+                reports.append(mbr)
                 if args.debug:
                     observation.print_report()
                     observation.debug_report()
-                # TODO: Output report to COER encoded file
+                # Output report to .COER file
+                os.makedirs("output", exist_ok=True)
+                coer_path = f"output/mbr-{len(reports)}.coer"
+                with open(coer_path, "wb") as f:
+                    f.write(mbr)
+                print(f"Wrote {coer_path}")
 
 # __name__
 if __name__=="__main__":
