@@ -1,9 +1,4 @@
 # bsm_utils.py
-<<<<<<< HEAD
-from asn.Ieee1609Dot2 import IEEE1609dot2
-from asn.J2735 import DSRC
-
-=======
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from asn.Ieee1609Dot2 import IEEE1609dot2
@@ -13,7 +8,6 @@ from shapely.geometry import Point
 from shapely.prepared import prep
 import geopandas as gpd
 import numpy as np
->>>>>>> 6613020 (added faults and signed messages)
 from os import listdir, path
 # constants relevant to local misbehavior detection
 
@@ -90,20 +84,6 @@ def parse_bsm(bytes):
     core_data = bsm.get_val()['coreData']
     return core_data
 
-<<<<<<< HEAD
-
-def load_security(security_path):
-    for f in listdir('./data/keys'):
-        if path.isdir(f):
-            break
-
-    cert_coer = open(f"./data/keys/{f}/download/{security_path}/{security_path}_0.cert", "rb").read()
-    s_bytes   = open(f"./data/keys/{f}/download/{security_path}/{security_path}_0.s", "rb").read()          # big-endian scalar
-    sk_base   = int.from_bytes(open(f"./data/keys/{f}/dwnl_sgn.priv", "rb").read(), "big")
-    return {"cert_coer" : cert_coer,\
-            "s_bytes" : s_bytes, \
-            "sk_base" : sk_base}
-=======
 def get_coords_outside_region(code_str, margin_deg=5):
     # load country with geopandas
     
@@ -167,4 +147,3 @@ def expansion_scalar_aes_dm(seed_key: bytes, i: int, j: int, order_n: int) -> in
 
     return int.from_bytes(out[:32], "big") % order_n
 
->>>>>>> 6613020 (added faults and signed messages)

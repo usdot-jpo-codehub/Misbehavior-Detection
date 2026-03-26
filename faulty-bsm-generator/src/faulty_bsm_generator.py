@@ -6,14 +6,9 @@ read encoded bsms, decode them, then randomly perturb
 # internal imports 
 from constants import DATA_DIR, OUTPUT_DIR
 from fault_log import FaultLog
-<<<<<<< HEAD
-from bsm_utils import BSM, load_security
-from bsm_encoder import EncoderDecoder
-=======
 from bsm_utils import BSM, load_security, expansion_scalar_aes_dm
 from bsm_encoder import EncoderDecoder
 from data_signer import DataSigner
->>>>>>> 6613020 (added faults and signed messages)
 from faults import FaultGenerators
 # type imports
 from datetime import datetime
@@ -22,22 +17,6 @@ from os import path
 # data processing imports
 import numpy as np
 
-<<<<<<< HEAD
-# cryptography imports
-import hashlib
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
-
-
-class FaultyBsmGenerator:
-    def __init__(self, IEEE_spec, DRSC_spec, np_seed, fault, security):
-        self.log = FaultLog()
-        self.cache = []
-        self.encoder = EncoderDecoder(IEEE_spec, DRSC_spec)
-        #self.security = load_security(security)
-=======
 
 class FaultyBsmGenerator:
     def __init__(self, IEEE_spec, DRSC_spec, np_seed, fault, bundle, validate):
@@ -45,7 +24,6 @@ class FaultyBsmGenerator:
         self.cache = []
         self.encoder = EncoderDecoder(IEEE_spec, DRSC_spec)
         self.signer = DataSigner(bundle, self.encoder, validate=validate)
->>>>>>> 6613020 (added faults and signed messages)
 
         self.mbs = FaultGenerators(include_gens=[fault])
         np.random.seed(np_seed)
@@ -77,11 +55,7 @@ class FaultyBsmGenerator:
                 msg_out.msg['content'][1]['tbsData']['payload']['data']['content'] = ('unsecuredData', encoded_bsm)
 
                 # TODO: sign Ieee1609Dot2Data object
-<<<<<<< HEAD
-                #msg_out.msg = self.sign_Ieee1609Dot2Data(msg_out.msg)
-=======
                 msg_out.msg = self.signer.sign_Ieee1609Dot2Data(msg_out.msg, encoder)
->>>>>>> 6613020 (added faults and signed messages)
                 msg_out.msg = encoder.encode_IEEE(msg_out.msg, output_codec)
 
             else: raise Exception("Output PDU is not in [MessageFrame, IeeeDot2Data]")
@@ -122,21 +96,13 @@ class FaultyBsmGenerator:
             fault = valid_mbs[rand_mb_ind]
             
             IeeeDot2Data = bsm.msg
-<<<<<<< HEAD
-            certificate = None #self.encoder.parse_certificate(self.security)
-=======
             certificate = self.encoder.parse_certificate(self.signer)
->>>>>>> 6613020 (added faults and signed messages)
             bsm_data = self.encoder.parse_bsm(IeeeDot2Data)
 
             if fault.type == 'individual' or fault.type == "none":
                 _, fault_msg = fault.func(bsm_data)
             elif fault.type == 'security':
-<<<<<<< HEAD
-                raise Exception("Securitty misbehaviors are not yet supported.")
-=======
                 #raise Exception("Securitty misbehaviors are not yet supported.")
->>>>>>> 6613020 (added faults and signed messages)
                 _, fault_msg = fault.func(IeeeDot2Data, certificate, bsm_data)
 
             bsm.mb = rand_mb_ind
@@ -146,73 +112,6 @@ class FaultyBsmGenerator:
         return perturbed_bsms
     
 
-<<<<<<< HEAD
-    def sign_Ieee1609Dot2Data(self, IeeeDot2Data):
-        """
-        Steps for signing Ieee1609Dot2Data structures:
-            1. Recreate the private_key by loading the .cert and .s of a pseudonym certificate
-            2. Build the digest, which is a cryptographic hash of the form
-                Hash( Hash(COER(tbsData)) || Hash(COER(cert)) )
-            3. Sign the digest using ECDSA with the private key 
-            4. Derive the digital signature (r, s) from signing the digest
-            5. Add last 8 bytes of SHA-256(cert) into signer.digest
-        """
-
-        encoder = self.encoder
-        def hashed_id_8(cert_coer_bytes: bytes) -> bytes:
-            """last eight bytes of SHA-256 over the COER-encoded certificate, used as the 
-            compact signer identifier when you don’t include the full cert.
-            
-            from C-ITS Certificate Overview:
-                The hashedId8 is calculated by encoding a certificate as per IEEE 1609.2 section 6.4.3 
-                and then taking the last eight bytes of a SHA256 hash"""
-            return hashlib.sha256(cert_coer_bytes).digest()[-8:]
-        
-        profile = self.security
-        cert_coer, s_bytes, sk_base = profile['cert_coer'], profile['s_bytes'], profile['sk_base']
-
-        """ 1. Recreate the private_key by loading the .cert and .s of a pseudonym certificate """
-        curve = ec.SECP256R1() 
-        # the curve order for P-256:
-        order_n = int("FFFFFFFF00000000FFFFFFFFFFFFFFFFBCE6FAADA7179E84F3B9CAC2FC632551", 16)
-        
-        # derive the private key based on certificate bundle 
-        s_i = int.from_bytes(s_bytes, "big")
-        sk_i = (sk_base + s_i) % order_n
-        priv_key = ec.derive_private_key(sk_i, curve, default_backend())
-
-        #   TODO might need to reset generationTime?
-        """ 2. Build the digest, which is a hash of the form
-                Hash( Hash(COER(tbsData)) || Hash(COER(cert)) ) """
-        tbs_coer = encoder.IEEE_spec.ToBeSignedData.to_coer(IeeeDot2Data['content'][1]['tbsData'])
-        # hash COER-ToBeSigned data
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(tbs_coer)
-        h_tbs = digest.finalize()
-
-        # hash COER-Certificate data
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(cert_coer)
-        h_cert = digest.finalize()
-
-        # hash appended hashed COER-encoded ToBeSigned and Certificate data (H)
-        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(h_tbs + h_cert)
-        H = digest.finalize()
-
-        """ 3. Sign the digest using ECDSA with the private key """
-        signature_der = priv_key.sign(H, ec.ECDSA(hashes.SHA256()))
-
-        """ 4. Derive (r, s) from signing, pack into signature """
-        r, s = decode_dss_signature(signature_der)
-        IeeeDot2Data['content'][1]['signature'] = ('ecdsaNistP256Signature', {'rSig' : ('compressed-y-0', r.to_bytes(32, 'big')), \
-                                                                                         'sSig' : s.to_bytes(32, 'big')})
-        """ 5. Add last 8 bytes of SHA-256(cert) into signer.digest """
-        IeeeDot2Data['content'][1]['signer'] = ('digest', hashed_id_8(cert_coer))
-        return IeeeDot2Data
-
-=======
->>>>>>> 6613020 (added faults and signed messages)
     '''
     def write_bsms
 

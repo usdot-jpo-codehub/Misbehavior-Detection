@@ -1,18 +1,10 @@
 # internal imports
 import bsm_utils
 from bsm_encoder import parse_header
-<<<<<<< HEAD
-# type imports
-from datetime import datetime
-# data processing imports
-import numpy as np
-import copy
-=======
 # data processing imports
 import numpy as np
 import datetime
 
->>>>>>> 6613020 (added faults and signed messages)
 
 class FaultGenerators:
     def __init__(self, include_gens=['none', 'individual', 'security']):
@@ -30,46 +22,26 @@ class FaultGenerators:
                                                       .format(FAULT_LIST=''.join(include_gens)))
         self.faults = filtered_faults
         
-<<<<<<< HEAD
-
-=======
     test = 5
->>>>>>> 6613020 (added faults and signed messages)
     def load_faults(self):
         faults = []
         faults.append(Fault('no_fault', 'none', no_fault))
         # individual misbehaviors
         faults.append(Fault('perturb_acceleration', 'individual', perturb_acceleration))
-<<<<<<< HEAD
-        #faults.append(Fault('perturb_security_messageId', 'individual', perturb_security_messageId))
-        #faults.append(Fault('perturb_speed', 'individual', perturb_speed))
-        #faults.append(Fault('perturb_brake_status', 'individual', perturb_brake_status))
-        #faults.append(Fault('perturb_location', 'list', perturb_location))
-        #faults.append(Fault('perturb_heading', 'individual', perturb_heading))
-=======
         faults.append(Fault('perturb_security_messageId', 'individual', perturb_security_messageId))
         faults.append(Fault('perturb_speed', 'individual', perturb_speed))
         faults.append(Fault('perturb_brake_status', 'individual', perturb_brake_status))
         faults.append(Fault('perturb_location', 'list', perturb_location))
         faults.append(Fault('perturb_heading', 'individual', perturb_heading))
->>>>>>> 6613020 (added faults and signed messages)
         
         # security misbehaviors 
         faults.append(Fault('perturb_security_message_id_inc_with_header_info', 'security', perturb_security_message_id_inc_with_header_info))
         faults.append(Fault('perturb_security_header_inc_with_security_profile', 'security', perturb_security_header_inc_with_security_profile))
-<<<<<<< HEAD
-        # faults.append(Fault('perturb_security_header_location_outside_certificate_validity', 'security', perturb_security_header_location_outside_certificate_validity))
-        faults.append(Fault('perturb_security_header_psid_inc_with_certificate', 'security', perturb_security_header_psid_inc_with_certificate))
-        # faults.append(Fault('perturb_security_header_time_outside_certificate_validity', 'security', perturb_security_header_time_outside_certificate_validity))
-        # faults.append(Fault('perturb_security_message_inc_with_ssp', 'security', perturb_security_message_inc_with_ssp))
-        # faults.append(Fault('perturb_security_message_location_outside_certificate_validity', 'security', perturb_security_message_location_outside_certificate_validity))
-=======
         faults.append(Fault('perturb_security_header_location_outside_certificate_validity', 'security', perturb_security_header_location_outside_certificate_validity))
         faults.append(Fault('perturb_security_header_psid_inc_with_certificate', 'security', perturb_security_header_psid_inc_with_certificate))
         faults.append(Fault('perturb_security_header_time_outside_certificate_validity', 'security', perturb_security_header_time_outside_certificate_validity))
         faults.append(Fault('perturb_security_message_inc_with_ssp', 'security', perturb_security_message_inc_with_ssp))
         faults.append(Fault('perturb_security_message_location_outside_certificate_validity', 'security', perturb_security_message_location_outside_certificate_validity))
->>>>>>> 6613020 (added faults and signed messages)
         return faults
 
 class Fault:
@@ -118,12 +90,7 @@ def perturb_security_messageId(bsm, valid_id=bsm_utils.VALID_ID):
 
     set the message_Id field to some value not equal to 20
     '''
-<<<<<<< HEAD
-    core_data = bsm['coreData']
-    old_msg_id = core_data["messageId"] 
-=======
     old_msg_id = bsm['messageId']
->>>>>>> 6613020 (added faults and signed messages)
 
     new_msg_id = np.random.randint(valid_id + 1, valid_id + 1000)
     bsm["messageId"] = new_msg_id
@@ -136,11 +103,7 @@ def perturb_speed(bsm, speed_threshold=bsm_utils.MAX_SPEED):
 
     This algorithm flags BSMs with speed values over 100 miles per hour.  
     '''
-<<<<<<< HEAD
-    core_data = bsm['coreData']
-=======
     core_data = bsm['value'][1]['coreData']
->>>>>>> 6613020 (added faults and signed messages)
     old_speed = core_data["speed"]
     # compute and set faulty speed
     new_speed =  np.random.randint(speed_threshold + 1, speed_threshold + 1000)
@@ -155,21 +118,10 @@ def perturb_brake_status(bsm):
 
     This algorithm flags BSMs with improper brake status format by checking 
     '''
-<<<<<<< HEAD
-    core_data = bsm['coreData']
-    old_brake_status = core_data['brakes']['wheelBrakes']
-
-    if np.random.rand() > 0.5: core_data['brakes']['wheelBrakes'] = str(np.random.randint(100000, 1000000))
-    else: 
-        digits = [str(np.random.randint(2, 9)) for _ in range(5)]
-        brake_status = "".join(digits)
-        core_data['brakes']['wheelBrakes'] = brake_status
-=======
     core_data = bsm['value'][1]['coreData']
     old_brake_status = core_data['brakes']['wheelBrakes']
 
     core_data['brakes']['wheelBrakes'] = (np.random.randint(17, 99), np.random.randint(5, 8))#(np.random.randint())
->>>>>>> 6613020 (added faults and signed messages)
 
     new_brake_status = core_data['brakes']['wheelBrakes']
     return bsm, "perturb_brake_status: set bake_status to {NEW_VAL} from {OLD_VAL}".format(\
@@ -187,11 +139,7 @@ def perturb_location(bsm_list, dist_threshold=bsm_utils.LOC_DISTANCE_THRESHOLD):
     else: loc_field = 'longitude'
     
     bsm = bsm_list[bsm_index]
-<<<<<<< HEAD
-    core_data = bsm['coreData']
-=======
     core_data = bsm['value'][1]['coreData']
->>>>>>> 6613020 (added faults and signed messages)
 
     old_loc = core_data[loc_field]
     new_loc = core_data[loc_field][loc_field] + np.random.randint(dist_threshold, dist_threshold + 100)
@@ -207,11 +155,7 @@ def perturb_heading(bsm, min_val=bsm_utils.MIN_HEADING, max_val=bsm_utils.MAX_HE
     This algorithm flags BSMs with impossible heading values outside of the 
     range of 0 to 360 degrees.
     '''
-<<<<<<< HEAD
-    core_data = bsm['coreData']
-=======
     core_data = bsm['value'][1]['coreData']
->>>>>>> 6613020 (added faults and signed messages)
     old_heading = core_data['heading']
 
     new_heading = np.random.randint(low=max_val + 1, high=max_val + 1000)
@@ -246,20 +190,6 @@ def perturb_security_header_inc_with_security_profile(IeeeDot2Data, certificate,
     SAE J2945/1 section 6.1.2.2 as referred to from SAE J3161/1 section 6.1.2, e.g., generationTime is absent in the
     security headerInfo but is required to be present in the security profile.
     '''
-<<<<<<< HEAD
-    headerInfo = IeeeDot2Data['content'][1]['tbsData']['headerInfo']
-
-    profile_items = ['generationTime', 'psid']
-    profile_index = np.random.randint(0, len(profile_items))
-    profile_key = profile_items[profile_index]
-
-    del headerInfo[profile_key]
-    return bsm, "perturb_security_header_inc_with_security_profile: removed {NEW_VAL} from security headerInfo".format(\
-        NEW_VAL=profile_key) 
-
-
-def perturb_security_header_location_outside_certificate_validity(IeeeDot2Data, certificate, bsm):
-=======
     EPOCH_2004 = datetime.datetime(2004, 1, 1, tzinfo=datetime.timezone.utc)
 
     def __generate_Location():
@@ -291,22 +221,11 @@ def perturb_security_header_location_outside_certificate_validity(IeeeDot2Data, 
     return bsm, f"perturb_security_header_inc_with_security_profile: added {new_field} to security headerInfo"
 
 def perturb_security_message_location_outside_certificate_validity(IeeeDot2Data, certificate, bsm):
->>>>>>> 6613020 (added faults and signed messages)
     '''
     perturb_security_header_location_outside_certificate_validity
 
     Checks for fields in headerInfo as expected in J2945 
     '''
-<<<<<<< HEAD
-
-    signed_data = certificate["signedData"]
-    header_loc = signed_data["headerInfo"]["generationLocation"]
-
-    cert_locs = certificate["certificate"]["identifiedRegion"]
-    if header_loc in cert_locs: cert_locs.remove(header_loc)
-    return bsm, "perturb_security_header_location_outside_certificate_validity: removed {NEW_VAL} from locations in certificate".format(\
-        NEW_VAL=header_loc) 
-=======
     cert_region = certificate["toBeSigned"]["region"]
     cert_country = cert_region[1][0][1]
     code_str = f"{cert_country:03d}"
@@ -319,7 +238,6 @@ def perturb_security_message_location_outside_certificate_validity(IeeeDot2Data,
 
     return bsm, "perturb_security_header_location_outside_certificate_validity: set lat/lon coordinates in message coreData to ({NEW_VAL}), outside of country designed by code {CODE}".format(\
         NEW_VAL=', '.join(map(str, pts)), CODE=code_str) 
->>>>>>> 6613020 (added faults and signed messages)
 
 
 def perturb_security_header_psid_inc_with_certificate(IeeeDot2Data, certificate, bsm):
@@ -332,15 +250,6 @@ def perturb_security_header_psid_inc_with_certificate(IeeeDot2Data, certificate,
     '''
 
     signed_data = IeeeDot2Data['content'][1]['tbsData']['headerInfo']
-<<<<<<< HEAD
-    old_psid = certificate["toBeSigned"]["appPermissions"][0]["psid"]
-
-    new_psid = old_psid + np.random.randint(1, 20)
-    signed_data["psid"] = new_psid
-
-    return bsm, "perturb_security_header_psid_inc_with_certificate: set psid in appPermissions to {NEW_VAL} from {OLD_VAL}".format(\
-        NEW_VAL=new_psid, OLD_VAL=old_psid) 
-=======
     cert_psid = certificate["toBeSigned"]["appPermissions"][0]["psid"]
 
     psid_delta = np.random.randint(1, 20)
@@ -354,7 +263,6 @@ def perturb_security_header_psid_inc_with_certificate(IeeeDot2Data, certificate,
 
     return bsm, "perturb_security_header_psid_inc_with_certificate: set psid in appPermissions to {NEW_VAL} from {OLD_VAL} in certificate".format(\
         NEW_VAL=new_psid, OLD_VAL=cert_psid) 
->>>>>>> 6613020 (added faults and signed messages)
 
 
 def perturb_security_header_time_outside_certificate_validity(IeeeDot2Data, certificate, bsm):
@@ -364,26 +272,6 @@ def perturb_security_header_time_outside_certificate_validity(IeeeDot2Data, cert
     The generationTime in the security headerInfo is outside the
     validityPeriod in the certificate.
     '''
-<<<<<<< HEAD
-    
-    dur_start = certificate["toBeSigned"]["validityPeriod"]["start"]
-    dur_hrs = certificate["toBeSigned"]["validityPeriod"]["duration"][1]
-
-    old_time = datetime.fromtimestamp(dur_start)
-    
-    cert_start_t = datetime.fromtimestamp(certificate["certificate"]['validityPeriod']['start'])
-    cert_duration =  datetime.hour(certificate["certificate"]['validityPeriod']['duration'])
-    cert_end_t = cert_start_t + cert_duration
-
-    new_time = cert_end_t + np.random.int(1, 500)
-    signed_data["headerInfo"]["generationTime"] = new_time
-
-    return bsm, "perturb_security_header_time_outside_certificate_validity: set psid in appPermissions to {NEW_VAL} from {OLD_VAL}".format(\
-        NEW_VAL=new_time, OLD_VAL=old_time) 
-
-
-# TODO: not sure I have access to SSP standards
-=======
     # validityPeriod[start] is # seconds since January 1, 2024
     validityPeriod = certificate["toBeSigned"]["validityPeriod"]
     
@@ -412,7 +300,6 @@ def perturb_security_header_time_outside_certificate_validity(IeeeDot2Data, cert
 
 
 # TODO: not sure we have access to SSP standards
->>>>>>> 6613020 (added faults and signed messages)
 def perturb_security_message_inc_with_ssp(IeeeDot2Data, certificate, bsm):
     '''
     perturb_security_message_inc_with_ssp
@@ -422,17 +309,6 @@ def perturb_security_message_inc_with_ssp(IeeeDot2Data, certificate, bsm):
     BasicSafetyMessage but the relevant SSP in the certificate does not permit DE_BasicVehicleRole to be set to
     police.
     '''
-<<<<<<< HEAD
-
-    pass
-
-def perturb_security_message_location_outside_certificate_validity(IeeeDot2Data, certificate, bsm):
-    bsm_data = ['value'][1]['coreData']
-    bsm_lat, bsm_lon = bsm_data['lat'], bsm_data['lon']
-
-    certificate_region = certificate["certificate"]["region"]
-    pass
-=======
     emerg_roles = ["police", "ambulance", "fire"]
     rand_role = emerg_roles[np.random.randint(0, len(emerg_roles))]
 
@@ -472,5 +348,4 @@ def perturb_security_header_location_outside_certificate_validity(IeeeDot2Data, 
     IeeeDot2Data['content'][1]['tbsData']['headerInfo']['generationLocation'] = {'latitude' : pts[0], 'longitude': pts[1], 'elevation': 0 }
     return bsm, "perturb_security_message_location_outside_certificate_validity: set generationLocation in security header to ({NEW_VAL}), outside of country designed by code {CODE}".format(\
         NEW_VAL=', '.join(map(str, pts)), CODE=code_str) 
->>>>>>> 6613020 (added faults and signed messages)
     
