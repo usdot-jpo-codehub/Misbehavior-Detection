@@ -327,7 +327,7 @@ class DataSigner:
         curve = ec.SECP256R1()
 
         # ---- Step 1: butterfly expansion: kU = sk_base + f(i,j) (mod n) ----
-        f_ij = self.expansion_scalar_aes_dm(sgn_expnsn_bytes, iValue, jValue, _N)  # you said this is correct
+        f_ij = self.expansion_scalar_aes_dm(sgn_expnsn_bytes, iValue, jValue, _N)  
         kU = (sk_base_int + f_ij) % _N
 
         # ---- Decode EE cert ----
@@ -385,8 +385,6 @@ class DataSigner:
         # ---- Step 2: build H for SPDU signature ----
         tbs_coer = encoder.IEEE_spec.ToBeSignedData.to_coer(IeeeDot2Data["content"][1]["tbsData"])
 
-        # Use cert bytes in the same canonical form the verifier will use:
-        # since you're embedding a decoded cert, safest is to hash the COER encoding of that decoded cert.
         cert_for_hash = encoder.IEEE_spec.Certificate.to_coer(ee_cert)
 
         H = _sha256(_sha256(tbs_coer) + _sha256(cert_for_hash))
@@ -395,7 +393,7 @@ class DataSigner:
         sig_der = priv_key.sign(H, ec.ECDSA(Prehashed(hashes.SHA256())))
         r, s = decode_dss_signature(sig_der)
 
-        # after you set signer=('certificate',[cert_decoded]) and set signature
+        # set signer=('certificate',[cert_decoded]) and set signature
         wire = encoder.IEEE_spec.Ieee1609Dot2Data.to_coer(IeeeDot2Data)
         encoder.IEEE_spec.Ieee1609Dot2Data.from_coer(wire)
         rt = encoder.IEEE_spec.Ieee1609Dot2Data.get_val()
@@ -407,7 +405,6 @@ class DataSigner:
         H2 = _sha256(_sha256(tbs2) + _sha256(cert2))
         assert H2 == H, "You signed different bytes than you transmitted"
 
-        # ---- Optional: normalize s (some validators require low-s) ----
         if normalize_low_s and s > (_N // 2):
             s = _N - s
 
