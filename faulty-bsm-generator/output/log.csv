@@ -300,3 +300,23 @@ bsm_id,fault_id,fault_desc,date
 299,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-19 15:36:03.237350
 300,0,no fault,2026-03-19 15:36:03.237429
 301,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (fire), which is illegal for certificate without corresponding ssp permissions",2026-03-19 15:36:03.237500
+302,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (fire), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.892926
+303,0,no fault,2026-03-30 12:30:00.896012
+304,0,no fault,2026-03-30 12:30:00.896218
+305,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (ambulance), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896294
+306,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896366
+307,0,no fault,2026-03-30 12:30:00.896415
+308,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (ambulance), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896458
+309,0,no fault,2026-03-30 12:30:00.896504
+310,0,no fault,2026-03-30 12:30:00.896542
+311,0,no fault,2026-03-30 12:30:00.896579
+312,0,no fault,2026-03-30 12:30:00.896617
+313,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896656
+314,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896695
+315,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896731
+316,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896768
+317,0,no fault,2026-03-30 12:30:00.896809
+318,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896846
+319,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (police), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896885
+320,0,no fault,2026-03-30 12:30:00.896923
+321,1,"perturb_security_message_inc_with_ssp: set BSM payload to identify as role (fire), which is illegal for certificate without corresponding ssp permissions",2026-03-30 12:30:00.896959
