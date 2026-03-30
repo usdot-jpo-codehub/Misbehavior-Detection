@@ -7,6 +7,7 @@ To run Faulty-Bsm-Generator, install the python requirements in /requirements.tx
 python3 -m venv ./venv
 pip install -r requirements.txt
 ```
+**Note that this code has been tested for Python version 3.10 and later**.
 
 #### Scripts and Running Faulty-BSM-Generator 
 The primary test script for running Faulty-BSM Generator is ```src/test_faultybsm.py``` which enables a number of parameters for evaluation, including the **output codec** (--output_codec), **filename** (--input_file), and the number of random repitions per file (to generate new faults, --repeat_files). For example, reading an IeeeDot2Data object in ```data/example_IEEE/test_IeeeDot2Data.bin```, perturbing it with one random fault, and writing it's MessageFrame in JSON codec:
