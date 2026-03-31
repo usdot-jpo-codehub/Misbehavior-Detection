@@ -5,3 +5,4 @@ kafka-python
 zstandard
 geopandas
 pytest
+requests

@@ -7,6 +7,13 @@ import ast
 import argparse
 from os import path
 
+import sys
+print("PYTHON:", sys.executable)
+print("PATH0:", sys.path[0])
+print("SYSPATH:", sys.path)
+import pycrate_asn1rt
+print("PYCRATE_ASN1RT:", pycrate_asn1rt.__file__)
+
 import pycrate_asn1c.asnobj
 pycrate_asn1c.asnobj.STRICT_MODE = False
 pycrate_asn1c.asnobj.ASN1Obj._SAFE_BND = False

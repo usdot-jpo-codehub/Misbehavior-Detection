@@ -28,8 +28,6 @@ Additionally, users can adjust the numpy random seed using ```--seed```, as in t
 
 ### Description 
 Faulty-BSM-generator reads an encoded BSM, modifies it to include a randomly generated fault, writes the faulty BSM to a log, and finally encodes the BSM to a new format (XER, JER, COER, DER are supported). Currently, the following misbehaviors have been implemented:
-<<<<<<< HEAD
-=======
 - **perturb_security_message_id_inc_with_header_info**: This algorithm generates a random string for the MessageFrame messageID
 - **perturb_security_header_inc_with_security_profile**: The security headerInfo is inconsistent with the security profile specified in SAE J2945/1 section 6.1.2.2 as referred to from SAE J3161/1 section 6.1.2, e.g., generationTime is absent in the security headerInfo but is required to be present in the security profile.
 - **perturb_security_message_location_outside_certificate_validity**: set lat/lon coordinates in message coreData outside of country designed by code
@@ -37,17 +35,13 @@ Faulty-BSM-generator reads an encoded BSM, modifies it to include a randomly gen
 - **perturb_security_header_time_outside_certificate_validity**: The generationTime in the security headerInfo is outside the validityPeriod in the certificate
 - **perturb_security_message_inc_with_ssp**: The message payload is inconsistent with the SSP in the certificate, as specified in SAE J3161/1 Appendix C, e.g., partII.supplementalVehicleExt.classDetails.role.police is present in the BasicSafetyMessage but the relevant SSP in the certificate does not permit DE_BasicVehicleRole to be set to police.
 - **perturb_security_header_location_outside_certificate_validity**: location in security header is ooutside the bounds indicated by the certificate
->>>>>>> 6613020 (added faults and signed messages)
 - **perturb_acceleration**: set the longitudinal acceleration to some random value exceeding the valid threshold
 - **perturb_speed**: set speed (BSM value) over 100 miles per hour
 - **perturb_brake_status**: set to value greater than 5 digits OR (randomly decided) set digit to neither 1 nor 0
 - **perturb_heading**: set heading value some integer greater than 360 degrees
-<<<<<<< HEAD
-=======
 - **perturb_location**: set location of vehicle from one message outside the plausible boundaries implied by accompanying messages
 - **perturb_security_messageId**: set the message_Id field to some value not equal to 20
 
->>>>>>> 6613020 (added faults and signed messages)
 
 
 A misbehavior is selected at random (via a random seed process to enable reproduction), the BSM is modified, and a fault-log (output/log.csv) is appended to with the following information:
@@ -68,32 +62,23 @@ bsm_id,fault_id,fault_desc,date
 ├── data/
 │   ├── example_bsm/
 │   └── example_IEEE/
-<<<<<<< HEAD
-=======
 |   └── keys/
->>>>>>> 6613020 (added faults and signed messages)
 ├── output/
 ├── src/
 │   ├── asn/
 |       ├── Ieee1609Dot2.py
 |       ├── J2735.py
 │   └── test_faultybsm.py
+|   └── data_signer.py
 |   └── faulty_bsm_generator.py
 |   └── faults.py
 |   └── fault_log.py
 |   └── constants.py
-|   └── bsm_utls.py
-|   └── bsm_enconder.py
+|   └── bsm_utils.py
+|   └── bsm_encoder.py
 |
 └──requirements.txt
-<<<<<<< HEAD
-
-#### Next Steps
-- Certificate tests need work
-- Separate test scripts from src code
-=======
 ```
 
 ### Signing Messages and Validation
-Messages are now signed via local certificates (`/data/keys/`) which can be validated with SCMS service (see `virtual-device/validate`). To do so, you'll need to make an account with SCMS and set the `API_KEY` envrionment variable. If validation of the signature is not required, set the paramter to false (`--validate False`). Validation is not required for signing. 
->>>>>>> 6613020 (added faults and signed messages)
+Messages are now signed via local certificates (`/data/keys/`) which can be validated with SCMS service (see `virtual-device/validate`). To do so, you'll need to make an account with SCMS and set the `API_KEY` environment variable. If validation of the signature is not required, set the parameter to false (`--validate False`). Validation is not required for signing. 
