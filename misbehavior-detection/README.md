@@ -12,6 +12,15 @@ output/               # Generated conversions & reports
 src/                  # Detection and generation logic
 ```
 
+## Prerequisites
+
+Install Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+
 ## Building ASN.1 Shared Libraries
 
 **All required libraries to run this tool are included in this repository.** However, if you would like to build your own libraries, you may do so with the following instructions. 
@@ -32,13 +41,13 @@ gcc -I ../asn1c/skeletons/ -fPIC -shared -o {LIB_NAME}.so *.c
 
 ## Misbehavior Detection Workflow
 
-1. If not already present, generate shared library for SAE J3287 ASN.1 following instructions in above section.
-2. Provide a COER-encoded IEEE1609Dot2Data file in `data/Ieee1609Dot2Data/`.
+1. If **`lib/asn1clib.so` and `lib/MessageFrame.so` are not already present**, generate shared library for SAE J3287 ASN.1 following instructions in above section.
+2. Provide a COER-encoded IEEE1609Dot2Data file in `data/Ieee1609Dot2Data/`. This file should encompass a faulty (misbehaving) BSM. `Ieee1609Dot2Data_bad_accel.coer` has been provided for your convenience. This file contains a BSM with an acceleration exceeding the range allowed by the J3287 ASN.1 schema.
 3. Run detection:
 ```
 python3 src/detection.py --misbehaviors acceleration-ValueOutofRange --bsm data/Ieee1609Dot2Data/{filename}
 ```
-4. Reports will be generated to `output/` directory
+1. Reports will be generated to `output/` directory
 
 Use `--debug` to emit JSON snapshots of the internal report structure.
 
@@ -58,3 +67,7 @@ This tool currently supports detection and reporting of all SAE J3287-specified 
 | `security-MessageIdIncWithHeaderInfo` | Security message ID is inconsistent with the header info |
 | `security-MessageIncWithSsp` | Security message is inconsistent with the SSP (Service Specific Permissions) |
 | `security-MessageLocationOutsideCertificateValidity` | Security message location is outside the certificate's validity region |
+
+## Limitations
+
+Currently the code does not support signing and encryption of the MBR. These capabilities will be supported in the next release.
