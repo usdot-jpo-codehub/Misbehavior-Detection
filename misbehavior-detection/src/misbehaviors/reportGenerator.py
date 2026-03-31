@@ -50,14 +50,11 @@ class ReportGenerator:
         total_tai_seconds = time_difference.total_seconds() + leap_seconds
         tai_microseconds = int(total_tai_seconds * 1_000_000)
 
-        observation_type = ""
         observation = ""
 
         if target_id == 5:
-            observation_type = "longAcc"
-            observation = "LongAcc-ValueTooLarge"
+            observation = "ValueTooLarge"
         elif target_id == 2:
-            observation_type = "security"
             if observation_id == 1:
                 observation = "Security-MessageIdIncWithHeaderInfo"
             elif observation_id == 2:
@@ -89,44 +86,28 @@ class ReportGenerator:
                             "content": {
                                 "AsrBsm": {
                                     "observations": {
-                                        "ObservationsByTarget-SetMbObsTgtsBsm": [
-                                            {
-                                                "tgtId": target_id,
-                                                "observations": {
-                                                    observation_type: [
-                                                        {
-                                                            "obsId": observation_id,
-                                                            "obs": {
-                                                                observation: {}
-                                                            },
-                                                        }
-                                                    ]
-                                                },
+                                        "ObservationsByTarget-Bsm": {
+                                            "tgtId": target_id,
+                                            "observations": {
+                                                "ANY": f"{observation_id:02x}00"
                                             }
-                                        ]
+                                        }
                                     },
                                     "v2xPduEvidence": {
                                         "V2xPduStream": {
                                             "type": 2,
                                             "v2xPdus": {
-                                                "ieee1609Dot2": [
-                                                    {
-                                                        "protocolVersion": 3,
-                                                        "content": {
-                                                            "unsecuredData": evidence
-                                                        },
-                                                    }
-                                                ]
+                                                "ANY": evidence
                                             },
                                             "subjectPduIndex": 0,
                                         }
                                     },
-                                    "nonV2xPduEvidence": {},
+                                    "nonV2xPduEvidence": None
                                 }
-                            },
-                        },
+                            }
+                        }
                     }
-                },
+                }
             }
         }
 
