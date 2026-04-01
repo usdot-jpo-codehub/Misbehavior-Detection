@@ -1,18 +1,10 @@
 from faulty_bsm_generator import FaultyBsmGenerator
-from asn.J2735 import DSRC
-from asn.Ieee1609Dot2 import IEEE1609dot2
+from utils.asn.J2735 import DSRC
+from utils.asn.Ieee1609Dot2 import IEEE1609dot2
+from utils.constants import DATA_DIR, INPUT_BSM_DIR
 
-from constants import DATA_DIR, INPUT_BSM_DIR
-import ast
 import argparse
 from os import path
-
-import sys
-print("PYTHON:", sys.executable)
-print("PATH0:", sys.path[0])
-print("SYSPATH:", sys.path)
-import pycrate_asn1rt
-print("PYCRATE_ASN1RT:", pycrate_asn1rt.__file__)
 
 import pycrate_asn1c.asnobj
 pycrate_asn1c.asnobj.STRICT_MODE = False
@@ -58,8 +50,8 @@ if __name__ == '__main__':
     # Get parameters
     parser = argparse.ArgumentParser(description ='Arguments for Faulty-BSM Generator')
     parser.add_argument('-f', '--input_file',
-                        #type = str, default='bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin',
-                        type = str, default='encoded_out_281_illegal',
+                        type = str, default='bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header',
+                        #type = str, default='encoded_out_281_illegal',
                         help ='name of the input file (in /data/example_bsm)')
     parser.add_argument('-o', '--output_codec',
                         type = str, default='COER',

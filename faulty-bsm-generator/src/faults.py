@@ -1,5 +1,5 @@
 # internal imports
-import bsm_utils
+from utils import bsm_utils
 from bsm_encoder import parse_header
 # data processing imports
 import numpy as np
@@ -236,7 +236,9 @@ def perturb_security_message_location_outside_certificate_validity(IeeeDot2Data,
     bsm['value'][1]['coreData']['lat'] = pts[0]
     bsm['value'][1]['coreData']['long'] = pts[1]
 
-    return bsm, "perturb_security_header_location_outside_certificate_validity: set lat/lon coordinates in message coreData to ({NEW_VAL}), outside of country designed by code {CODE}".format(\
+    print(IeeeDot2Data)
+
+    return bsm, "perturb_security_message_location_outside_certificate_validity: set lat/lon coordinates in message coreData to ({NEW_VAL}), outside of country designed by code {CODE}".format(\
         NEW_VAL=', '.join(map(str, pts)), CODE=code_str) 
 
 
@@ -313,6 +315,7 @@ def perturb_security_message_inc_with_ssp(IeeeDot2Data, certificate, bsm):
     rand_role = emerg_roles[np.random.randint(0, len(emerg_roles))]
 
     # check that certificate is not viable for police, ambulance, etc. role
+    print("TEST: ", certificate['toBeSigned']['appPermissions'])
     assert all([perm.get('ssp') is None for perm in certificate['toBeSigned']['appPermissions']])
 
     # set BSM payload to identify role illegally as polce, ambulance, etc. 
@@ -346,6 +349,6 @@ def perturb_security_header_location_outside_certificate_validity(IeeeDot2Data, 
     pts = bsm_utils.get_coords_outside_region(code_str)
     
     IeeeDot2Data['content'][1]['tbsData']['headerInfo']['generationLocation'] = {'latitude' : pts[0], 'longitude': pts[1], 'elevation': 0 }
-    return bsm, "perturb_security_message_location_outside_certificate_validity: set generationLocation in security header to ({NEW_VAL}), outside of country designed by code {CODE}".format(\
+    return bsm, "perturb_security_header_location_outside_certificate_validity: set generationLocation in security header to ({NEW_VAL}), outside of country designed by code {CODE}".format(\
         NEW_VAL=', '.join(map(str, pts)), CODE=code_str) 
     

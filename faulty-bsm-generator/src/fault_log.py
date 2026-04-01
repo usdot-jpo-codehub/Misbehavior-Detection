@@ -3,7 +3,7 @@ utils.py
 
 lesser utility functions to avoid overcrowding main /src/ scripts
 '''
-from constants import OUTPUT_DIR, LOG_NAME
+from utils.constants import OUTPUT_DIR, LOG_NAME
 from os import path
 import csv
 

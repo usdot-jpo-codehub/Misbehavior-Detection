@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 
 from bsm_encoder import EncoderDecoder
-from asn.J2735 import DSRC
-from asn.Ieee1609Dot2 import IEEE1609dot2
+from utils.asn.J2735 import DSRC
+from utils.asn.Ieee1609Dot2 import IEEE1609dot2
 IEEE_SPEC = IEEE1609dot2
 DRSC_SPEC = DSRC
 from data_signer import DataSigner

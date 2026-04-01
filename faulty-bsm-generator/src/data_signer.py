@@ -1,5 +1,5 @@
 from os import listdir, path, getenv
-from bsm_utils import expansion_scalar_aes_dm
+from utils.bsm_utils import expansion_scalar_aes_dm
 # cryptography imports
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -88,8 +88,7 @@ G = (
         int("4fe342e2fe1a7f9b8ee7eb4a7c0f9e162bce33576b315ececbb6406837bf51f5", 16),
     )
 class DataSigner:
-    def __init__(self, bundle, encoder, validate=True):
-        
+    def __init__(self, bundle, encoder, validate=True):        
         iValue, jValue = self.find_cert_valid_now(bundle, encoder)
 
         
@@ -172,7 +171,7 @@ class DataSigner:
             blocks.append(bytes(a ^ b for a, b in zip(ct, xt_bytes)))
 
         fk_int = int.from_bytes(b"".join(blocks), "big")   # 48 bytes
-        print(f"fk_int: {hex(fk_int)}")
+        #print(f"fk_int: {hex(fk_int)}")
         return fk_int % order_n
     
     def hashed_id_8(self, cert_coer_bytes: bytes) -> bytes:

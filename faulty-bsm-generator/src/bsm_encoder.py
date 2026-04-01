@@ -32,21 +32,6 @@ class EncoderDecoder:
     def decode_bsm(self, encoded_file : str):
         IEEE1609dot2 = self.IEEE_spec
 
-        # If header exists, parse header 
-        if HEADER_BYTES > 0: 
-            header_bytes = encoded_file[:HEADER_BYTES]
-            header = parse_header(header_bytes)
-            # Do something with header if needed
-        
-        #ieee1609Dot2Data = IEEE1609dot2.Ieee1609Dot2Data
-        #ieee1609Dot2Data.from_coer_ws(encoded_file)
-
-        #print(IEEE1609dot2.Ieee1609Dot2Data.to_jer(ieee1609Dot2Data.get_val()))
-
-        # Decode bsm into ASN structure
-        #bsm_bytes = encoded_file[HEADER_BYTES:]
-        #bsm = self.parse_bsm(bsm_bytes)
-
         # Assuming IEEE 1609.2 and J2735 WAVE message definitions
         ieee1609Dot2Data = IEEE1609dot2.Ieee1609Dot2Data
         ieee1609Dot2Data.from_coer_ws(encoded_file)

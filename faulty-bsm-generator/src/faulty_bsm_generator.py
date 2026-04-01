@@ -4,9 +4,9 @@ faulty_bsm_generator.py
 read encoded bsms, decode them, then randomly perturb 
 '''
 # internal imports 
-from constants import DATA_DIR, OUTPUT_DIR
+from utils.constants import DATA_DIR, OUTPUT_DIR
 from fault_log import FaultLog
-from bsm_utils import BSM, load_security, expansion_scalar_aes_dm
+from utils.bsm_utils import BSM, load_security, expansion_scalar_aes_dm
 from bsm_encoder import EncoderDecoder
 from data_signer import DataSigner
 from faults import FaultGenerators

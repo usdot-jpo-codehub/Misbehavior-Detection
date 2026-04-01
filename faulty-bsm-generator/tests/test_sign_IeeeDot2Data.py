@@ -1,8 +1,8 @@
 from data_signer import DataSigner
 from faulty_bsm_generator import FaultyBsmGenerator
 from test_faultybsm import read_file
-from asn.J2735 import DSRC
-from asn.Ieee1609Dot2 import IEEE1609dot2
+from utils.asn.J2735 import DSRC
+from utils.asn.Ieee1609Dot2 import IEEE1609dot2
 
 from unittest import TestCase
 from cryptography.hazmat.primitives.asymmetric import ec

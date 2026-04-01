@@ -2,9 +2,16 @@
 
 ### Usage Instructions
 #### Requirements
-To run Faulty-Bsm-Generator, install the python requirements in /requirements.txt by creating a virtual envrionment and installing libraries via pip. In the terminal navigate to the root of this repository (./Misbehavior-Detection/faulty-bsm-generator):
+| Tool    | Description |
+| -------- | ------- |
+| Python 3.10+  | Python version    |
+| requirements.txt | see **below** for installation of required Python packages     |
+| data/keys/{bundle}    | certificate bundle for signing certificates. Required to run!   |
+
+To run Faulty-Bsm-Generator, install the python requirements in `requirements.txt` by creating a virtual envrionment and installing libraries via pip. In the terminal navigate to the root of this repository (`./Misbehavior-Detection/faulty-bsm-generator`):
 ```
 python3 -m venv ./venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 **Note that this code has been tested for Python version 3.10 and later**.
@@ -18,7 +25,7 @@ The primary test script for running Faulty-BSM Generator is ```src/test_faultybs
 where the output (in JER) will be written to ```output/``` and a corresponding line will be appended to ```output/log.csv``` (see below for more information). 
 
 #### Note on Header Bytes
-Validation of Faulty-BSM-Generator depended on test BSMs which included 26 header bytes prepended to the MessageFrame structure (see 'decode_bsm' in ./src/bsm_encoder.py). Therefore, BSMs which do not include these header bytes may cause failure in this decoding function.  
+Our initial BSM data contained headers from WYDOT, which without intervention do not decode properly. Remove WYDOT headers by running `python src/utils/remove_WYDOT_header.py --input_file {COER_ENCODED_IEEE_DOT2_DATA_FILENAME}`. Recall that data should be placed in `data/example_IEEE`.
 
 #### Random Seeds
 Additionally, users can adjust the numpy random seed using ```--seed```, as in the following example
@@ -70,7 +77,6 @@ bsm_id,fault_id,fault_desc,date
 |       ├── Ieee1609Dot2.py
 |       ├── J2735.py
 │   └── test_faultybsm.py
-|   └── data_signer.py
 |   └── faulty_bsm_generator.py
 |   └── faults.py
 |   └── fault_log.py
@@ -82,4 +88,4 @@ bsm_id,fault_id,fault_desc,date
 ```
 
 ### Signing Messages and Validation
-Messages are now signed via local certificates (`/data/keys/`) which can be validated with SCMS service (see `virtual-device/validate`). To do so, you'll need to make an account with SCMS and set the `API_KEY` environment variable. If validation of the signature is not required, set the parameter to false (`--validate False`). Validation is not required for signing. 
+Messages are now signed via local certificates (`/data/keys/`) which can be validated with SCMS service (see `virtual-device/validate`). To do so, you'll need to make an account with SCMS and set the `API_KEY` envrionment variable. If validation of the signature is not required, set the parameter to false (`--validate False`). Validation is not required for signing. 

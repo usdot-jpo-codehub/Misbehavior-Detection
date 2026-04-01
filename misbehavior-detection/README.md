@@ -47,7 +47,7 @@ gcc -I ../asn1c/skeletons/ -fPIC -shared -o {LIB_NAME}.so *.c
 ```
 python3 src/detection.py --misbehaviors acceleration-ValueOutofRange --bsm data/Ieee1609Dot2Data/{filename}
 ```
-4. Reports will be generated to `output/` directory
+1. Reports will be generated to `output/` directory
 
 Use `--debug` to emit JSON snapshots of the internal report structure.
 
