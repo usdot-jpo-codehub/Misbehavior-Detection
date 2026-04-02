@@ -41,7 +41,7 @@ gcc -I ../asn1c/skeletons/ -fPIC -shared -o {LIB_NAME}.so *.c
 
 ## Misbehavior Detection Workflow
 
-1. If **`lib/asn1clib.so` and `lib/MessageFrame.so` are not already present**, generate shared library for SAE J3287 ASN.1 following instructions in above section.
+1. If **`lib/asn1clib.so`, `lib/Certificate.so` and `lib/MessageFrame.so` are not already present**, generate shared library for SAE J3287 ASN.1 following instructions in above section.
 2. Provide a COER-encoded IEEE1609Dot2Data file in `data/Ieee1609Dot2Data/`. This file should encompass a faulty (misbehaving) BSM. `Ieee1609Dot2Data_bad_accel.coer` has been provided for your convenience. This file contains a BSM with an acceleration exceeding the range allowed by the J3287 ASN.1 schema.
 3. Run detection:
 ```
@@ -50,6 +50,56 @@ python3 src/detection.py --misbehaviors acceleration-ValueOutofRange --bsm data/
 1. Reports will be generated to `output/` directory
 
 Use `--debug` to emit JSON snapshots of the internal report structure.
+
+## Command-Line Arguments
+
+Primary usage:
+
+```bash
+python3 src/detection.py [options]
+```
+
+| Flag | Short Form | Required | Default | Description |
+|---|---|---|---|---|
+| `--misbehaviors` | `-m` | No | `acceleration-ValueOutofRange` | Space-separated list of one or more misbehavior checks to run. |
+| `--bsm` | `-b` | No | `data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer` | Path to a single `.coer` BSM file or to a directory containing multiple `.coer` files. |
+| `--certs-dir` | `-c` | No | None | Path to an SCMS certificate bundle used to sign generated reports. Supports pseudonym bundles with a `download/` layout and RSU bundles with an `rsu-*/downloadFiles/` layout. |
+| `--ma-key` | None | No | None | Path to the Misbehavior Authority recipient certificate. Use this together with `--certs-dir` when generating an sTE-wrapped report instead of a plaintext or signed-only report. |
+| `--debug` | `-d` | No | Disabled | Prints the internal report representation as JER/JSON for inspection while still writing encoded output files to `output/`. |
+
+### Flag Usage Notes
+
+- `--misbehaviors` accepts multiple values separated by spaces, for example: `--misbehaviors acceleration-ValueOutofRange security-HeaderPsidIncWithCertificate`
+- `--bsm` can target either one file or an entire directory. When a directory is provided, every `.coer` file in that directory is processed.
+- If `--certs-dir` is omitted, reports will be generated as plaintext.
+- If `--certs-dir` is included, but `--ma-key` is omitted, reports will be generated as signed but not encrypted.
+
+### Example Commands
+
+Run the default acceleration check against one input file:
+
+```bash
+python3 src/detection.py --bsm data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer
+```
+
+Generate signed reports using an SCMS bundle:
+
+```bash
+python3 src/detection.py \
+	--misbehaviors acceleration-ValueOutofRange \
+	--bsm data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer \
+	--certs-dir path/to/scms-bundle
+```
+
+Generate an sTE-wrapped report for a Misbehavior Authority recipient:
+
+```bash
+python3 src/detection.py \
+	--misbehaviors acceleration-ValueOutofRange \
+	--bsm data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer \
+	--certs-dir path/to/scms-bundle \
+	--ma-key path/to/ma_public_key.cert
+```
 
 ## Supported Misbehaviors 
 
