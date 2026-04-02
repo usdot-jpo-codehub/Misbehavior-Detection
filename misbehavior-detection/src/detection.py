@@ -1,11 +1,14 @@
 import argparse
 import ctypes
 import glob
+import hashlib
 import json
 import os
+import sys
 
 import encoder_utils, decoder_utils
 from asn1c_bridge import load_lib, get_td, RC_OK
+from signing_utils import load_signing_key, select_pseudonym_cert, select_rsu_cert
 from utils import OBS_TITLES
 
 def load_BSM(filepath):
@@ -21,7 +24,6 @@ def load_BSM(filepath):
         raise SystemExit(f"OER decode failed")
     ieee_jer = encoder_utils.encode_jer(lib, td, sptr)
     ieee_dict = json.loads(ieee_jer)
-    print(ieee_dict)  # Debug: print the decoded IEEE 1609.2 data structure
     
     message_frame_hex = ieee_dict["content"]["signedData"]["tbsData"]["payload"]["data"]["content"]["unsecuredData"]
     message_frame = bytes.fromhex(message_frame_hex)
@@ -59,8 +61,16 @@ def launch():
     parser.add_argument('-b', '--bsm', type=str,
                         help='path to a BSM .coer file OR a directory containing .coer files',
                         default='data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer')
+    parser.add_argument('-c', "--certs-dir",
+                        help="SCMS bundle directory. For RSU bundles (rsu-*/downloadFiles/ layout) "
+                        "the currently valid cert is selected automatically. For pseudonym bundles "
+                        "(download/{i}/{i}_{j}.cert layout with sgn_expnsn.key) butterfly expansion "
+                        "is applied automatically. Detection is based on the presence of download/.",)
+    parser.add_argument('--ma-key', type=str, default=None,
+                        help='path to the MA recipient certificate file (e.g. certs/ma_public_key.cert)')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='optional flag to output reports as JER')
+
     args = parser.parse_args()
 
     observations = []
@@ -69,6 +79,25 @@ def launch():
             observations.append(OBS_TITLES[misbehavior_type])
         else: 
             raise Exception("{CUR_TITLE} not a valid observation name!".format(CUR_TITLE=misbehavior_type))
+
+    cert_bytes = None
+    signing_key = None
+
+    if args.certs_dir:
+        if os.path.isdir(os.path.join(args.certs_dir, 'download')):
+            # Pseudonym bundle: download/{i}/{i}_{j}.cert + sgn_expnsn.key
+            print(f"  Detected pseudonym bundle: {args.certs_dir}", file=sys.stderr)
+            cert_path, key_path = select_pseudonym_cert(args.certs_dir)
+            signing_key = load_signing_key(key_path, bundle_dir=args.certs_dir)
+        else:
+            # RSU bundle: rsu-*/downloadFiles/*.cert
+            cert_path, key_path = select_rsu_cert(args.certs_dir)
+            signing_key = load_signing_key(key_path)
+        with open(cert_path, 'rb') as fh:
+            cert_bytes = fh.read()
+        print(f"  Selected cert: {cert_path} "
+              f"(SHA-256: {hashlib.sha256(cert_bytes).hexdigest()[:16]}...)",
+              file=sys.stderr)
 
     # Resolve input BSM paths (single file or directory)
     bsm_input = args.bsm
@@ -91,14 +120,14 @@ def launch():
             detections = observation.analyze_bsm(ieee, bsm, ieee_hex)
             for detection in detections:
                 target_id, observation_id, evidence = detection
-                mbr = observation.generate_report(target_id, observation_id, evidence)
+                mbr = observation.generate_report(target_id, observation_id, evidence, cert_bytes, signing_key, args.ma_key)
                 reports.append(mbr)
                 if args.debug:
                     observation.print_report()
                     observation.debug_report()
                 # Output report to .COER file
                 os.makedirs("output", exist_ok=True)
-                coer_path = f"output/mbr-{len(reports)}.coer"
+                coer_path = f"output/mbr-{observation.report_type}-{len(reports)}.coer"
                 with open(coer_path, "wb") as f:
                     f.write(mbr)
                 print(f"Wrote {coer_path}")
