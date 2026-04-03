@@ -59,9 +59,9 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--repeat_files',
                         type = int, default=20,
                         help ='number of times to copy incoming file')
-    parser.add_argument('-t', '--object_out',
-                        type = str, default='IeeeDot2Data',
-                        help ='output IeeeDot2Data or MessageFrame')
+    # parser.add_argument('-t', '--object_out',
+    #                     type = str, default='IeeeDot2Data',
+    #                     help ='output IeeeDot2Data or MessageFrame')
     parser.add_argument('-s', '--seed',
                         type = int, default=2026,
                         help ='numpy random seed for predictable randomness')

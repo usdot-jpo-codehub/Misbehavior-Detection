@@ -14,13 +14,45 @@ python3 -m venv ./venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-**Note that this code has been tested for Python version 3.10 and later**.
 
-#### Scripts and Running Faulty-BSM-Generator 
-The primary test script for running Faulty-BSM Generator is ```src/test_faultybsm.py``` which enables a number of parameters for evaluation, including the **output codec** (--output_codec), **filename** (--input_file), and the number of random repitions per file (to generate new faults, --repeat_files). For example, reading an IeeeDot2Data object in ```data/example_IEEE/test_IeeeDot2Data.bin```, perturbing it with one random fault, and writing it's MessageFrame in JSON codec:
+Note also the placement of the certificate bundle under `data/keys/`. The Faulty-BSM Generator signs every message: **the code will not run without a valid certificate bundle**. See below for the expected directory structure:
+
+```
+.
+├── README.md
+├── data/
+│   ├── example_bsm/
+│   └── example_IEEE/
+|   └── keys/
+|   |   ├── {bundle}/
+|   |   |   ├── certchain/
+|   |   |   └── download/
+|   |   |   └── trustedcerts/   
+|   |   |   └── dwnl_enc.priv
+|   |   |   └── dwnl_sgn.priv
+|   |   |   └── enc_expnsn.key
+|   |   |   └── enr_sign.priv
+|   |   |   └── sgn_expnsn.key
+...
+```
+
+Where the necessary files for signing are found in
+```
+path_cert = f"./data/keys/{bundle}/download/{iValue}/{iValue}_{jValue}.cert"
+path_s = f"./data/keys/{bundle}/download/{iValue}/{iValue}_{jValue}.s"
+path_priv = f"./data/keys/{bundle}/dwnl_sgn.priv"
+path_sgn_exp = f"./data/keys/{bundle}/sgn_expnsn.key"
+```
+
+FBSM Generator will search for a valid (non-expired) certificiate and sign if successful. See **Signing and Validation** for more information regarding validation of a signed message.
+
+#### Example Running Faulty-BSM-Generator 
+The primary test script for running Faulty-BSM Generator is ```src/test_faultybsm.py``` which enables a number of parameters for evaluation, including the **output codec** (--output_codec), **filename** (--input_file), and the number of random repitions per file (to generate new faults, --repeat_files). For example, reading an IeeeDot2Data object in ```data/example_IEEE/bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header```, perturbing it with one random fault, and writing in JSON codec:
 
 
-```python3 src/test_faultybsm.py --input_file test_IeeeDot2Data.bin --repeat_files 1 --output_codec jer --object_out MessageFrame```
+```
+python3 src/test_faultybsm.py --input_file bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header --repeat_files 1 --output_codec jer
+```
 
 where the output (in JER) will be written to ```output/``` and a corresponding line will be appended to ```output/log.csv``` (see below for more information). 
 
@@ -31,7 +63,7 @@ Our initial BSM data contained headers from WYDOT, which without intervention do
 Additionally, users can adjust the numpy random seed using ```--seed```, as in the following example
 
 
-```python3 src/test_faultybsm.py --input_file test_IeeeDot2Data.bin --repeat_files 1 --output_codec jer --object_out MessageFrame --seed 2025```
+```python3 src/test_faultybsm.py --input_file bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header --repeat_files 1 --output_codec jer --seed 2025```
 
 
 ### Description 
@@ -73,15 +105,18 @@ bsm_id,fault_id,fault_desc,date
 |   └── keys/
 ├── output/
 ├── src/
-│   ├── asn/
-|       ├── Ieee1609Dot2.py
-|       ├── J2735.py
+│   ├── utils/
+|   │   ├── asn/
+|   |   |   ├── Ieee1609Dot2.py
+|   |   |   ├── J2735.py
+|   |   └── bsm_utils.py
+|   |   └── constants.py
+|   |   └── remove_WYDOT_header.py
 │   └── test_faultybsm.py
 |   └── faulty_bsm_generator.py
 |   └── faults.py
 |   └── fault_log.py
-|   └── constants.py
-|   └── bsm_utils.py
+|   └── data_signer.py
 |   └── bsm_encoder.py
 |
 └──requirements.txt
