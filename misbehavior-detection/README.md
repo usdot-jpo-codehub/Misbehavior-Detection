@@ -67,6 +67,25 @@ python3 src/detection.py [options]
 | `--ma-key` | None | No | None | Path to the Misbehavior Authority recipient certificate. Use this together with `--certs-dir` when generating an sTE-wrapped report instead of a plaintext or signed-only report. |
 | `--debug` | `-d` | No | Disabled | Prints the internal report representation as JER/JSON for inspection while still writing encoded output files to `output/`. |
 
+## Obtaining the MA Certificate from an RA (IEEE 1609.2.1 §6.3.5.13)
+
+IEEE 1609.2.1-2022 §6.3.5.13 defines a standard REST endpoint for downloading the MA certificate:
+
+```
+GET https://{ra-host}/v3/ma-certificate?psid={hex-psid}
+```
+
+where `{hex-psid}` is the minimal-length hex encoding of the PSID for the application being reported (e.g. `20` for BSM, PSID 32 = 0x20).
+
+**Example (ISS pre-production RA):**
+
+```bash
+curl "https://ra.preprod.v2x.isscms.com/v3/ma-certificate?psid=20" \
+    -o certs/ma_keys/iss_ma_public_key.cert
+```
+
+The response body is the raw COER-encoded `Certificate` (binary, `application/octet-stream`).
+
 ### Flag Usage Notes
 
 - `--misbehaviors` accepts multiple values separated by spaces, for example: `--misbehaviors acceleration-ValueOutofRange security-HeaderPsidIncWithCertificate`
