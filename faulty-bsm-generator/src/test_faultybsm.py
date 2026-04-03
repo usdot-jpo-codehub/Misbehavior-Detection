@@ -42,7 +42,7 @@ def run_generator(args):
     file_bytes = read_file(path.join(DATA_DIR, INPUT_BSM_DIR, args.input_file)) 
     # run generator with input / output codec
     faulty_generator.generate([file_bytes for _ in range(0, args.repeat_files)], 
-                              object_out=args.object_out, output_codec=args.output_codec.lower())
+                              object_out="IeeeDot2Data", output_codec=args.output_codec.lower())
     faulty_generator.write_bsms()
 
 
