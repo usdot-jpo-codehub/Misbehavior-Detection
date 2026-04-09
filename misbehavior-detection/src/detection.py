@@ -131,10 +131,10 @@ def launch():
     # Resolve input BSM paths (single file or directory)
     bsm_input = args.bsm
     if os.path.isdir(bsm_input):
-        bsm_paths = sorted(glob.glob(os.path.join(bsm_input, "*.coer")))
+        bsm_paths = sorted([f for f in glob.glob(os.path.join(bsm_input, "*")) if os.path.isfile(f)])
         if not bsm_paths:
-            raise SystemExit(f"No .coer files found in directory: {bsm_input}")
-        print(f"Found {len(bsm_paths)} .coer files in directory: {bsm_input}")
+            raise SystemExit(f"No files found in directory: {bsm_input}")
+        print(f"Found {len(bsm_paths)} files in directory: {bsm_input}")
     else:
         if not os.path.isfile(bsm_input):
             raise SystemExit(f"BSM path does not exist: {bsm_input}")
