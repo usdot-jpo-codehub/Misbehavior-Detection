@@ -11,6 +11,20 @@ from asn1c_bridge import load_lib, get_td, RC_OK
 from signing_utils import load_signing_key, select_pseudonym_cert, select_rsu_cert
 from utils import OBS_TITLES
 
+_cert_cache = {}
+
+
+def _compute_hashedid8(lib, cert_json_dict):
+    """Return the HashedId8 hex string for a certificate: SHA-256(OER(cert))[-8:]."""
+    cert_td = get_td(lib, "Certificate")
+    cert_jer = json.dumps(cert_json_dict).encode()
+    sptr, rval = decoder_utils.decode_jer(lib, cert_td, cert_jer)
+    if rval.code != RC_OK:
+        return None
+    cert_oer = encoder_utils.encode_oer(lib, cert_td, sptr)
+    return hashlib.sha256(cert_oer).digest()[-8:].hex().upper()
+
+
 def load_BSM(filepath):
     lib = ctypes.CDLL(f"libs/asn1clib.so")
     td = get_td(lib, "Ieee1609Dot2Data")
@@ -24,7 +38,22 @@ def load_BSM(filepath):
         raise SystemExit(f"OER decode failed")
     ieee_jer = encoder_utils.encode_jer(lib, td, sptr)
     ieee_dict = json.loads(ieee_jer)
-    
+
+    signer = ieee_dict.get("content", {}).get("signedData", {}).get("signer", {})
+    if "certificate" in signer:
+        cert_json = signer["certificate"][0]
+        hashedid8 = _compute_hashedid8(lib, cert_json)
+        if hashedid8:
+            _cert_cache[hashedid8] = cert_json
+    elif "digest" in signer:
+        digest_hex = signer["digest"].upper()
+        if digest_hex in _cert_cache:
+            ieee_dict["content"]["signedData"]["signer"] = {"certificate": [_cert_cache[digest_hex]]}
+            ieee_jer_mod = json.dumps(ieee_dict).encode()
+            sptr_mod, rval_mod = decoder_utils.decode_jer(lib, td, ieee_jer_mod)
+            if rval_mod.code == RC_OK:
+                data_hex = encoder_utils.encode_oer(lib, td, sptr_mod).hex()
+
     message_frame_hex = ieee_dict["content"]["signedData"]["tbsData"]["payload"]["data"]["content"]["unsecuredData"]
     message_frame = bytes.fromhex(message_frame_hex)
 
