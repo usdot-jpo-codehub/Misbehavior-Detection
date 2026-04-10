@@ -175,6 +175,10 @@ This tool currently supports detection and reporting of all SAE J3287-specified 
 | `security-MessageLocationOutsideCertificateValidity` | Security message location is outside the certificate's validity region |
 
 
-## Limitations
+## Certificate Caching
 
-Currently the code does not support signing and encryption of the MBR. These capabilities will be supported in the next release.
+This tool supports caching of full certificates from input Basic Safety Message Data. Messages with full certificates will have the certificate data cached to the HashedId8 value of the data and any messages with only a digest will compare against the cache for matching certificates. 
+
+If a matching certificate is found, the digest shall be replaced by the contents of the full certificate before being attached to a misbehavior report as evidence.
+
+The cache does not persist between executions.
