@@ -1,4 +1,5 @@
 import ctypes
+from ctypes import POINTER, c_char
 
 
 ASN_APP_CONSUME = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p)
@@ -20,9 +21,6 @@ def get_td(lib, base_name: str):
     Return a POINTER(asn_TYPE_descriptor_s) to the *object* asn_DEF_<base_name>.
     This works when the symbol is a struct object (the common asn1c case).
     """
-    import ctypes
-    from ctypes import POINTER, c_char
-
     sym = f"asn_DEF_{base_name}"
 
     # Get the symbol's address itself (not its contents).
