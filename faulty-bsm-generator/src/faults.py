@@ -1,6 +1,5 @@
 # internal imports
 from utils import bsm_utils
-from bsm_encoder import parse_header
 # data processing imports
 import numpy as np
 import datetime

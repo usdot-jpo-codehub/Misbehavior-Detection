@@ -16,7 +16,7 @@ class EncoderDecoder:
         self.IEEE_spec = IEEE_spec
         self.DSRC_spec = DSRC_spec
 
-    def spec_decode(self, spec, encoded_file, codec):
+    def spec_decode(self, spec, codec):
         decode_func = None
         if codec == 'per': decode_func = spec.from_uper_ws
         elif codec == 'der': decode_func = spec.from_der_ws
@@ -26,17 +26,23 @@ class EncoderDecoder:
         else: raise Exception("codec not supported")
         
         # attempt to decode
-        decode_func(encoded_file)
+        return decode_func
 
     
-    def decode_bsm(self, encoded_file : str):
+    def decode_bsm(self, encoded_file : str, input_codec):
         IEEE1609dot2 = self.IEEE_spec
 
         # Assuming IEEE 1609.2 and J2735 WAVE message definitions
         ieee1609Dot2Data = IEEE1609dot2.Ieee1609Dot2Data
-        ieee1609Dot2Data.from_coer_ws(encoded_file)
+        decode_func = self.spec_decode(ieee1609Dot2Data, input_codec)
 
-        print(IEEE1609dot2.Ieee1609Dot2Data.to_jer(ieee1609Dot2Data.get_val()))
+        try:
+            import traceback
+
+            decode_func(encoded_file)
+        except TypeError:
+            traceback.print_exc()
+
         return ieee1609Dot2Data.get_val()
         
     
@@ -103,7 +109,3 @@ def hex_to_bytes(hex_string):
 def bytes_to_hex(byte_string):
     return byte_string.hex()
 
-def parse_header(header):
-    # WYDOT bsms 26 bytes long
-    # wydotLogRecords.h
-    pass

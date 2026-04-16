@@ -34,11 +34,11 @@ class FaultyBsmGenerator:
 
     read encoded bytes, randomly perturb each message, then re-encode for writing
     '''
-    def generate(self, encoded_bsms : list, object_out, output_codec : str):
+    def generate(self, encoded_bsms : list, object_out, output_codec : str, input_codec = "coer"):
         encoder = self.encoder
 
         # read and perturb bsms
-        self.read_bsms(encoded_bsms)
+        self.read_bsms(encoded_bsms, input_codec=input_codec)
         bsms = self.perturb_bsms_random()
 
         # depending on user preference, insert BSM into IeeeDot2Data or
@@ -66,18 +66,20 @@ class FaultyBsmGenerator:
     read encoded bsm and decode, adding to cache of messages for later
     perturbance (def perturb_bsms)
     '''
-    def read_bsms(self, encoded_bsms : list):
+    def read_bsms(self, encoded_bsms : list, input_codec='coer'):
         encoder = self.encoder
         decoded_msgs = []
     
         for encoded_msg in encoded_bsms:
-            decoded_bsm = encoder.decode_bsm(encoded_msg)
+            decoded_bsm = encoder.decode_bsm(encoded_msg, input_codec=input_codec)
+            decoded_msgs.append(decoded_bsm)
+        self.process_incoming_bsms(decoded_msgs)
 
+    def process_incoming_bsms(self, decoded_bsms):
+        for bsm in decoded_bsms:
             cur_id = self.log.assign_id()
-            cur_bsm = BSM(msg=decoded_bsm, msg_id=cur_id)
-            decoded_msgs.append(cur_bsm)
-
-        self.cache.extend(decoded_msgs)
+            cur_bsm = BSM(msg=bsm, msg_id=cur_id)
+            self.cache.append(cur_bsm)
         
     '''
     def read_bsms
@@ -102,7 +104,6 @@ class FaultyBsmGenerator:
             if fault.type == 'individual' or fault.type == "none":
                 _, fault_msg = fault.func(bsm_data)
             elif fault.type == 'security':
-                #raise Exception("Securitty misbehaviors are not yet supported.")
                 _, fault_msg = fault.func(IeeeDot2Data, certificate, bsm_data)
 
             bsm.mb = rand_mb_ind
@@ -128,4 +129,7 @@ class FaultyBsmGenerator:
             fd = open(path.join(OUTPUT_DIR, 'encoded_out_{ID}'.format(ID=cur_id)), 'wb')
             fd.write(msg.msg)
 
+
+    def clear(self):
+        self.cache = []
 

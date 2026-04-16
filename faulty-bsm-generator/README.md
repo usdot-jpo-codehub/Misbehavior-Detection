@@ -48,13 +48,35 @@ FBSM Generator will search for a valid (non-expired) certificiate and sign if su
 
 #### Example Running Faulty-BSM-Generator 
 The primary test script for running Faulty-BSM Generator is ```src/test_faultybsm.py``` which enables a number of parameters for evaluation, including the **output codec** (--output_codec), **filename** (--input_file), and the number of random repitions per file (to generate new faults, --repeat_files). For example, reading an IeeeDot2Data object in ```data/example_IEEE/bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header```, perturbing it with one random fault, and writing in JSON codec:
-
-
 ```
 python3 src/test_faultybsm.py --input_file bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header --repeat_files 1 --output_codec jer
 ```
 
 where the output (in JER) will be written to ```output/``` and a corresponding line will be appended to ```output/log.csv``` (see below for more information). 
+
+#### Integration and Running with the JPO-ODE 
+The Faulty BSM Generator can inget messages through the ODE, and additionally, publish its modified messages to it as well. To do so, clone the compatible [jpo-ode fork](https://github.com/Stephen-Noblis/jpo-ode-FBSM) and follow the instructions for building and running the containers. Navigate to the root of this directory and run the `inject_through_ode` script:
+```
+python ./src/inject_through_ode.py
+```
+Running this script requires following the same procudes above (see _Requirements_). If connection is succesful, you should see the following confirmation and idle messages:
+```
+topic=topic.OdeBsmJson partition=0 offset=175
+No message yet...
+```
+
+If a BSM passes through the JPO-ODE, you should be able to see it. We include a teat file (/src/utils/send_bsm.py) that connects to the JPO-ODE and sends a BSM. If a message *is* encountered by the FBSM, the log and output directory should update with the new message, and a sending message should appear:
+```
+====================================================================================================
+topic=topic.OdeBsmJson partition=0 offset=174
+
+Trying UDP target IP: {YOUR_SERVER_IP}
+✓ Sent 376 bytes successfully to {YOUR_SERVER_IP}
+Check ODE logs now with: docker compose -f jpo-ode/docker-compose.yml logs --tail 20 ode
+
+====================================================================================================
+```
+
 
 #### Note on Header Bytes
 Our initial BSM data contained headers from WYDOT, which without intervention do not decode properly. Remove WYDOT headers by running `python src/utils/remove_WYDOT_header.py --input_file {COER_ENCODED_IEEE_DOT2_DATA_FILENAME}`. Recall that data should be placed in `data/example_IEEE`.
@@ -118,6 +140,7 @@ bsm_id,fault_id,fault_desc,date
 |   └── fault_log.py
 |   └── data_signer.py
 |   └── bsm_encoder.py
+|   └── inject_through_ode.py
 |
 └──requirements.txt
 ```

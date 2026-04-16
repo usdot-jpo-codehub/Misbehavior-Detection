@@ -26,10 +26,6 @@ DRSC_SPEC.AccelerationSet4Way._cont._dict['long']._const_val.root[0].ub = 2010
 IEEE_SPEC.Ieee1609Dot2Data._SAFE_BND = False # disable boundary checks
 IEEE_SPEC.Ieee1609Dot2Data._SAFE_VAL = False # disable boundary checks
 
-#IEEE_SPEC.HeaderInfo._root_mand = []
-#IEEE_SPEC.HeaderInfo._root_opt.insert(0, 'psid')
-#IEEE_SPEC._ToBeSignedData_headerInfo._root_mand = []
-#IEEE_SPEC._ToBeSignedData_headerInfo._root_opt.insert(0, 'psid')
 
 
 # read bytes from file
