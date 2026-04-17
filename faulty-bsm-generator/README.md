@@ -51,22 +51,16 @@ path_sgn_exp = f"./data/keys/{bundle}/sgn_expnsn.key"
 
 The tool will search for a valid (non-expired) certificiate and sign if successful. See **Signing Messages and Validation** for more information regarding validation of a signed message.
 
-<<<<<<< HEAD
-#### Example Running Faulty-BSM-Generator 
-The primary test script for running Faulty-BSM Generator is ```src/test_faultybsm.py``` which enables a number of parameters for evaluation, including the **output codec** (--output_codec), **filename** (--input_file), and the number of random repitions per file (to generate new faults, --repeat_files). For example, reading an IeeeDot2Data object in ```data/example_IEEE/bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header```, perturbing it with one random fault, and writing in JSON codec:
-=======
 ### Example Running Faulty BSM Generator 
 The primary test script for running Faulty BSM Generator is ```src/test_faultybsm.py``` which enables a number of parameters for evaluation, including the **output codec** (--output_codec), **filename** (--input_file), and the number of random repitions per file (to generate new faults, --repeat_files). For example, reading an IeeeDot2Data object in ```data/example_IEEE/bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header```, perturbing it with one random fault, and writing in JSON codec:
 
 
->>>>>>> 69ada860a9508b1ad3063020b24ecfbf2e2c5d1a
 ```
 python3 src/test_faultybsm.py --input_file bsmLogDuringEvent_1582235120_fe80__14dd_f8ff_fe5b_bac3.bin_no_header --repeat_files 1 --output_codec jer
 ```
 
 where the output (in JER) will be written to ```output/``` and a corresponding line will be appended to ```output/log.csv``` (see below for more information). 
 
-<<<<<<< HEAD
 #### Integration and Running with the JPO-ODE 
 The Faulty BSM Generator can inget messages through the ODE, and additionally, publish its modified messages to it as well. To do so, clone the compatible [jpo-ode fork](https://github.com/Stephen-Noblis/jpo-ode-FBSM) and follow the instructions for building and running the containers. Navigate to the root of this directory and run the `inject_through_ode` script:
 ```
@@ -92,9 +86,6 @@ Check ODE logs now with: docker compose -f jpo-ode/docker-compose.yml logs --tai
 
 
 #### Note on Header Bytes
-=======
-### Note on Header Bytes
->>>>>>> 69ada860a9508b1ad3063020b24ecfbf2e2c5d1a
 Our initial BSM data contained headers from WYDOT, which without intervention do not decode properly. Remove WYDOT headers by running `python src/utils/remove_WYDOT_header.py --input_file {COER_ENCODED_IEEE_DOT2_DATA_FILENAME}`. Recall that data should be placed in `data/example_IEEE`.
 
 ### Random Seeds
