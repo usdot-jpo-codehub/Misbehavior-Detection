@@ -7,4 +7,3 @@ geopandas
 pytest
 requests
 confluent_kafka
-socket

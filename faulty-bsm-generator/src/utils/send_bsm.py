@@ -1,10 +1,9 @@
 import socket
 import time
-import os
-import ast
-from test_faultybsm import read_file
 
-
+# read bytes from file
+def read_file(path_to_file):
+    return open(path_to_file, 'rb').read()
 
 # # Currently set to oim-dev environment's ODE
 # UDP_IP = "172.17.0.1"#os.getenv('DOCKER_HOST_IP')
