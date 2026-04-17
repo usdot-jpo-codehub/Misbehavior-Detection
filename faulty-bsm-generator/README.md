@@ -124,7 +124,6 @@ bsm_id,fault_id,fault_desc,date
 0,2,perturb_speed: set speed to 835 from 0,2025-03-18 13:28:08.888684 
 ```
 
-<<<<<<< HEAD
 ### Repository Structure
 ```
 .
@@ -152,8 +151,6 @@ bsm_id,fault_id,fault_desc,date
 |
 └──requirements.txt
 ```
-=======
->>>>>>> 69ada860a9508b1ad3063020b24ecfbf2e2c5d1a
 
 ## Signing Messages and Validation
 Messages are now signed via local certificates (`/data/keys/`) which can be validated with SCMS service (see `virtual-device/validate`). To do so, you'll need to make an account with SCMS and set the `API_KEY` envrionment variable. If validation of the signature is not required, set the parameter to false (`--validate False`). Validation is not required for signing. 
