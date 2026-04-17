@@ -54,10 +54,10 @@ def encode_xer(lib, td, sptr, flags: int = 0) -> bytes:
 
 def encode_uper(lib, td, sptr, max_bytes: int = 4096) -> bytes:
     """
-    Encode to UPER using uper_encode_to_buffer, if present.
+    Encode to UPER using uper_encode. Returns bytes.
     """
-    if not hasattr(lib, "uper_encode_to_buffer"):
-        raise RuntimeError("uper_encode_to_buffer not found in library")
+    if not hasattr(lib, "uper_encode"):
+        raise RuntimeError("uper_encode not found in library")
 
     lib.uper_encode.restype = asn_enc_rval_t
     lib.uper_encode.argtypes = [
@@ -72,9 +72,7 @@ def encode_uper(lib, td, sptr, max_bytes: int = 4096) -> bytes:
     rv = lib.uper_encode(td, None, sptr, cb, None)
 
     if rv.encoded < 0:
-        print(rv.encoded)
-        print(rv.failed_type.contents.name)
-        raise RuntimeError("uper_encode failed")
+        raise RuntimeError(f"uper_encode failed (encoded={rv.encoded}, failed_type={rv.failed_type.contents.name})")
 
     # rv.encoded is bit length; trim to full bytes
     nbytes = (rv.encoded + 7) // 8
@@ -103,7 +101,5 @@ def encode_oer(lib, td, sptr) -> bytes:
     cb, chunks = _collect_bytes()
     rv = lib.oer_encode(td, sptr, cb, None)
     if rv.encoded < 0:
-        print(rv.encoded)
-        print(rv.failed_type.contents.name)
-        raise RuntimeError(f"encoding with oer_encode failed")
+        raise RuntimeError(f"oer_encode failed (encoded={rv.encoded}, failed_type={rv.failed_type.contents.name})")
     return b"".join(chunks)

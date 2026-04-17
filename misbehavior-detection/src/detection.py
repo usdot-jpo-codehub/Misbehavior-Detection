@@ -26,10 +26,11 @@ def _compute_hashedid8(lib, cert_json_dict):
 
 
 def load_BSM(filepath):
-    lib = ctypes.CDLL(f"libs/asn1clib.so")
+    lib = ctypes.CDLL("libs/asn1clib.so")
     td = get_td(lib, "Ieee1609Dot2Data")
 
-    data = open(filepath, "rb").read()
+    with open(filepath, "rb") as f:
+        data = f.read()
     data_hex = data.hex()
     sptr, rval = decoder_utils.decode_oer(lib, td, data)
     # Debug
@@ -43,9 +44,11 @@ def load_BSM(filepath):
     if "certificate" in signer:
         cert_json = signer["certificate"][0]
         hashedid8 = _compute_hashedid8(lib, cert_json)
+        print("HASHEDID8: ", hashedid8)
         if hashedid8:
             _cert_cache[hashedid8] = cert_json
     elif "digest" in signer:
+        print("DIGEST: ", signer["digest"])
         digest_hex = signer["digest"].upper()
         if digest_hex in _cert_cache:
             ieee_dict["content"]["signedData"]["signer"] = {"certificate": [_cert_cache[digest_hex]]}
@@ -57,7 +60,7 @@ def load_BSM(filepath):
     message_frame_hex = ieee_dict["content"]["signedData"]["tbsData"]["payload"]["data"]["content"]["unsecuredData"]
     message_frame = bytes.fromhex(message_frame_hex)
 
-    lib = ctypes.CDLL(f"libs/MessageFrame.so")
+    lib = ctypes.CDLL("libs/MessageFrame.so")
     td = get_td(lib, "MessageFrame")
     sptr, rval = decoder_utils.decode_uper(lib, td, message_frame)
     # Debug
@@ -107,7 +110,7 @@ def launch():
         if misbehavior_type in OBS_TITLES: 
             observations.append(OBS_TITLES[misbehavior_type])
         else: 
-            raise Exception("{CUR_TITLE} not a valid observation name!".format(CUR_TITLE=misbehavior_type))
+            raise Exception(f"{misbehavior_type} not a valid observation name!")
 
     cert_bytes = None
     signing_key = None
@@ -161,6 +164,5 @@ def launch():
                     f.write(mbr)
                 print(f"Wrote {coer_path}")
 
-# __name__
-if __name__=="__main__":
+if __name__ == "__main__":
     launch()
