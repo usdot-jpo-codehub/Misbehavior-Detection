@@ -40,7 +40,7 @@ class ReportGenerator:
         print(f"Wrote mbr-{self.report_type}-{timestamp}.json")
 
     def encode_report(self):
-        lib = ctypes.CDLL("libs/asn1clib.so")
+        lib = ctypes.CDLL("libs/J3287.so")
         td = get_td(lib, "SaeJ3287Data")
 
         data = xmltodict.unparse(self.report, full_document=False)
@@ -58,9 +58,32 @@ class ReportGenerator:
 
     def _encode_mbr_to_oer(self, mbr_content: dict) -> bytes:
         """XER-encode a SaeJ3287Mbr content dict to OER bytes."""
-        lib = ctypes.CDLL("libs/asn1clib.so")
+        lib = ctypes.CDLL("libs/J3287.so")
+
+        # The compiled library uses a flat ASN.1 where AidSpecificReport.content
+        # is a plain ANY type. In XER, ANY is encoded as hex-dumped OER bytes,
+        # not as XML elements. So we must OER-encode AsrBsm first, then embed
+        # those bytes as hex in the <content> element of SaeJ3287Mbr.
+        asrbsm_dict = mbr_content["report"]["content"]["AsrBsm"]
+        td_asrbsm = get_td(lib, "AsrBsm")
+        asrbsm_xer = xmltodict.unparse({"AsrBsm": asrbsm_dict}, full_document=False)
+        asrbsm_xer = re.sub(r'<([^/>\s]+)></\1>', r'<\1/>', asrbsm_xer)
+        sptr_asrbsm, rval_asrbsm = decoder_utils.decode_xer(lib, td_asrbsm, asrbsm_xer.encode("utf-8"))
+        if rval_asrbsm.code != 0:
+            raise RuntimeError(f"AsrBsm XER decode failed (code={rval_asrbsm.code})")
+        asrbsm_oer = encoder_utils.encode_oer(lib, td_asrbsm, sptr_asrbsm)
+        content_hex = ' '.join(f'{b:02X}' for b in asrbsm_oer)
+
+        mbr_with_hex = {
+            "generationTime": mbr_content["generationTime"],
+            "observationLocation": mbr_content["observationLocation"],
+            "report": {
+                "aid": mbr_content["report"]["aid"],
+                "content": content_hex,
+            },
+        }
         td = get_td(lib, "SaeJ3287Mbr")
-        mbr_xer = xmltodict.unparse({"SaeJ3287Mbr": mbr_content}, full_document=False)
+        mbr_xer = xmltodict.unparse({"SaeJ3287Mbr": mbr_with_hex}, full_document=False)
         mbr_xer = re.sub(r'<([^/>\s]+)></\1>', r'<\1/>', mbr_xer)
         sptr, rval = decoder_utils.decode_xer(lib, td, mbr_xer.encode("utf-8"))
         if rval.code != 0:
@@ -70,7 +93,7 @@ class ReportGenerator:
     def _build_ste(self, ma_cert_path: str) -> dict:
         # OER-encode inner Ieee1609Dot2Data-Signed
         inner_dict = self.signed["SaeJ3287Data"]["content"]["signed"]
-        lib = ctypes.CDLL("libs/asn1clib.so")
+        lib = ctypes.CDLL("libs/J3287.so")
         td_1609 = get_td(lib, "Ieee1609Dot2Data")
         inner_xer = xmltodict.unparse({"Ieee1609Dot2Data": inner_dict},
                                       full_document=False)
@@ -188,7 +211,7 @@ class ReportGenerator:
                 "content": {
                     "AsrBsm": {
                         "observations": {
-                            "ObservationsByTarget-Bsm": {
+                            "SEQUENCE": {
                                 "tgtId": target_id,
                                 "observations": {
                                     "ANY": f"{observation_id:02x}00"
@@ -226,7 +249,7 @@ class ReportGenerator:
                 "psid": 38,
             },
         }
-        _lib = ctypes.CDLL("libs/asn1clib.so")
+        _lib = ctypes.CDLL("libs/J3287.so")
         _td_tbs = get_td(_lib, "ToBeSignedData")
         _tbs_xer = xmltodict.unparse({"ToBeSignedData": tbs_data}, full_document=False)
         _tbs_xer = re.sub(r'<([^/>\s]+)></\1>', r'<\1/>', _tbs_xer)
@@ -324,7 +347,7 @@ class ReportGenerator:
                             "content": {
                                 "AsrBsm": {
                                     "observations": {
-                                        "ObservationsByTarget-Bsm": {
+                                        "SEQUENCE": {
                                             "tgtId": target_id,
                                             "observations": {
                                                 "ANY": f"{observation_id:02x}00"

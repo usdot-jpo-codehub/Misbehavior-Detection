@@ -80,7 +80,7 @@ def load_signing_key(path: str, bundle_dir: str = None):
 
         # e: SHA-256( SHA-256(COER(TBS)) || SHA-256(issuer_cert) ) mod n
         _cert_lib = ctypes.CDLL(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'libs', 'Certificate.so'))
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'libs', 'J3287.so'))
         _cert_td = get_td(_cert_lib, 'Certificate')
         _sptr, _rval = decoder_utils.decode_oer(_cert_lib, _cert_td, cert_bytes)
         cert_jer = encoder_utils.encode_jer(_cert_lib, _cert_td, _sptr)
@@ -205,8 +205,9 @@ def parse_cert_validity(cert_bytes: bytes):
     Scans for a ValidityPeriod: Time32 (4 bytes) followed by a Duration
     CHOICE tag (0x80–0x86) and Uint16 value.  Collects all plausible matches
     (start in 2015–2040 range, duration >= 1 hour) and returns the one with
-    the latest start — avoiding false positives from incidental byte patterns
-    elsewhere in the cert with very short durations.
+    the longest duration — false positives from overlapping byte patterns in
+    the cert body produce artificially short durations (minutes/hours) while
+    real validity periods are days or longer.
     """
     EPOCH = datetime.datetime(2004, 1, 1, tzinfo=datetime.timezone.utc)
     DURATION_SECS = {0: 1e-6, 1: 1e-3, 2: 1, 3: 60, 4: 3600, 5: 216000, 6: 365.25 * 86400}
@@ -230,7 +231,7 @@ def parse_cert_validity(cert_bytes: bytes):
                     candidates.append((start, expire))
     if not candidates:
         raise ValueError("Could not parse validity period from certificate")
-    return max(candidates, key=lambda x: x[0])  # latest start
+    return max(candidates, key=lambda x: (x[1] - x[0]).total_seconds())  # longest duration
 
 
 def _find_issuer_cert_coer(bundle_dir: str, issuer_hid8: bytes) -> bytes:
@@ -299,7 +300,7 @@ def decode_cert_to_xer_dict(cert_bytes: bytes) -> dict:
     """OER-decode an IEEE 1609.2 Certificate and return its XER representation
     as a dict (compatible with xmltodict / XER workflow).
     """
-    lib = ctypes.CDLL("libs/asn1clib.so")
+    lib = ctypes.CDLL("libs/J3287.so")
     td = get_td(lib, "Certificate")
     sptr, rval = decoder_utils.decode_oer(lib, td, cert_bytes)
     if rval.code != 0:

@@ -26,7 +26,7 @@ def _compute_hashedid8(lib, cert_json_dict):
 
 
 def load_BSM(filepath):
-    lib = ctypes.CDLL("libs/asn1clib.so")
+    lib = ctypes.CDLL("libs/J3287.so")
     td = get_td(lib, "Ieee1609Dot2Data")
 
     with open(filepath, "rb") as f:
@@ -60,7 +60,7 @@ def load_BSM(filepath):
     message_frame_hex = ieee_dict["content"]["signedData"]["tbsData"]["payload"]["data"]["content"]["unsecuredData"]
     message_frame = bytes.fromhex(message_frame_hex)
 
-    lib = ctypes.CDLL("libs/MessageFrame.so")
+    lib = ctypes.CDLL("libs/J2735.so")
     td = get_td(lib, "MessageFrame")
     sptr, rval = decoder_utils.decode_uper(lib, td, message_frame)
     # Debug
