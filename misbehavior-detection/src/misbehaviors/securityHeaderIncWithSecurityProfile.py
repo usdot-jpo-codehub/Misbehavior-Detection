@@ -46,7 +46,5 @@ class SecurityHeaderIncWithSecurityProfile(ReportGenerator):
 
         if violation:
             self.detections.append((self.tgt_id, self.obs_id, ieee_data))
-        else:
-            print("No inconsistency: headerInfo conforms to security profile")
 
         return self.detections

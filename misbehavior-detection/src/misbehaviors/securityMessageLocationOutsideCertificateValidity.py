@@ -27,7 +27,6 @@ class SecurityMessageLocationOutsideCertificateValidity(ReportGenerator):
     '''
     def analyze_bsm(self, ieee, bsm, ieee_data):
         core_data = bsm.get("value", {}).get("BasicSafetyMessage", {}).get("coreData", {})
-        print('CORE DATA: ', core_data)
         msg_lat = core_data.get("latitude", core_data.get("lat"))
         msg_lon = core_data.get("longitude", core_data.get("long"))
 
@@ -59,7 +58,5 @@ class SecurityMessageLocationOutsideCertificateValidity(ReportGenerator):
             if outside:
                 print(f"DETECTION: Message location outside certificate region: {msg_lat}, {msg_lon}")
                 self.detections.append((self.tgt_id, self.obs_id, ieee_data))
-            else:
-                print("No inconsistency: message location within certificate region")
 
         return self.detections

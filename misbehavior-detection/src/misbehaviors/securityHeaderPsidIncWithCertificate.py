@@ -60,7 +60,5 @@ class SecurityHeaderPsidIncWithCertificate(ReportGenerator):
         elif psid not in permitted_psids:
             print(f"DETECTION: PSID {psid} in headerInfo not permitted by certificate")
             self.detections.append((self.tgt_id, self.obs_id, ieee_data))
-        else:
-            print(f"No inconsistency: PSID {psid} permitted by certificate")
 
         return self.detections

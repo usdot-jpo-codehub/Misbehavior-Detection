@@ -47,7 +47,5 @@ class SecurityHeaderTimeOutsideCertificate(ReportGenerator):
             if outside:
                 print(f"DETECTION: Header generationTime outside certificate validity: {gen_time} not in [{start}, {end}]")
                 self.detections.append((self.tgt_id, self.obs_id, ieee_data))
-            else:
-                print("No inconsistency: header generationTime within certificate validity")
 
         return self.detections

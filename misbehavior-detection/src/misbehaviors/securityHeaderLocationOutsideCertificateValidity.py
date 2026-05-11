@@ -71,7 +71,5 @@ class SecurityHeaderLocationOutsideCertificateValidity(ReportGenerator):
             if outside:
                 print(f"DETECTION: Header generationLocation outside certificate region: {gen_lat}, {gen_lon}")
                 self.detections.append((self.tgt_id, self.obs_id, ieee_data))
-            else:
-                print("No inconsistency: header generationLocation within certificate region")
 
         return self.detections

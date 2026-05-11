@@ -85,11 +85,9 @@ class SecurityMessageIncWithSsp(ReportGenerator):
                 break
 
         if claimed_role is None or claimed_role == "basicVehicle":
-            print("No restricted role claimed in BSM supplementalVehicleExt; no SSP check needed")
             return self.detections
 
         if claimed_role not in self.ROLE_SSP_BITS:
-            print(f"Role '{claimed_role}' has no defined SSP restriction; no check needed")
             return self.detections
 
         if cert_ssp_bytes is None:
@@ -102,7 +100,5 @@ class SecurityMessageIncWithSsp(ReportGenerator):
         if not role_permitted:
             print(f"DETECTION: BSM claims role '{claimed_role}' but certificate SSP does not permit it")
             self.detections.append((self.tgt_id, self.obs_id, ieee_data))
-        else:
-            print(f"No inconsistency: certificate SSP permits role '{claimed_role}'")
 
         return self.detections

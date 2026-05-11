@@ -33,7 +33,5 @@ class SecurityMessageIdIncWithHeaderInfo(ReportGenerator):
         if inconsistent:
             print(f"DETECTION: MessageId {message_id} inconsistent with security headerInfo PSID {psid}")
             self.detections.append((self.tgt_id, self.obs_id, ieee_data))
-        else:
-            print("No inconsistency: MessageId aligns with security headerInfo PSID")
 
         return self.detections

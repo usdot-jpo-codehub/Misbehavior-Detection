@@ -34,9 +34,9 @@ def load_BSM(filepath):
     data_hex = data.hex()
     sptr, rval = decoder_utils.decode_oer(lib, td, data)
     # Debug
-    print(f"OER decode: code={rval.code} consumed={rval.consumed}")
+    #print(f"OER decode: code={rval.code} consumed={rval.consumed}")
     if rval.code != 0:
-        raise SystemExit(f"OER decode failed")
+        raise SystemExit(f"OER decode failed: code={rval.code} consumed={rval.consumed}")
     ieee_jer = encoder_utils.encode_jer(lib, td, sptr)
     ieee_dict = json.loads(ieee_jer)
 
@@ -44,7 +44,6 @@ def load_BSM(filepath):
     if "certificate" in signer:
         cert_json = signer["certificate"][0]
         hashedid8 = _compute_hashedid8(lib, cert_json)
-        print("HASHEDID8: ", hashedid8)
         if hashedid8:
             _cert_cache[hashedid8] = cert_json
     elif "digest" in signer:
@@ -64,9 +63,9 @@ def load_BSM(filepath):
     td = get_td(lib, "MessageFrame")
     sptr, rval = decoder_utils.decode_uper(lib, td, message_frame)
     # Debug
-    print(f"UPER decode: code={rval.code} consumed={rval.consumed}")
+    #print(f"UPER decode: code={rval.code} consumed={rval.consumed}")
     if rval.code != 0:
-        raise SystemExit(f"UPER decode failed")
+        raise SystemExit(f"UPER decode failed: code={rval.code} consumed={rval.consumed}")
     message_frame_jer = encoder_utils.encode_jer(lib, td, sptr)
     message_frame = json.loads(message_frame_jer)
     
@@ -75,9 +74,9 @@ def load_BSM(filepath):
     td = get_td(lib, "BasicSafetyMessage")
     sptr, rval = decoder_utils.decode_uper(lib, td, basicsafety)
     # Debug
-    print(f"UPER decode: code={rval.code} consumed={rval.consumed}")
+    #print(f"UPER decode: code={rval.code} consumed={rval.consumed}")
     if rval.code != 0:
-        raise SystemExit(f"UPER decode failed")
+        raise SystemExit(f"UPER decode failed: code={rval.code} consumed={rval.consumed}")
     bsm_jer = encoder_utils.encode_jer(lib, td, sptr)
     bsm = json.loads(bsm_jer)
     bsm = {"BasicSafetyMessage": bsm}
@@ -147,12 +146,25 @@ def launch():
 
     reports = []
 
+    check_names = {id(obs): name for name, obs in OBS_TITLES.items()}
+
     for bsm_path in bsm_paths:
-        print(f"Processing BSM file: {bsm_path}")
+        print(f"\n--- Processing BSM file: {bsm_path} ---")
         ieee, bsm, ieee_hex = load_BSM(bsm_path)
+        print(f"\nRunning {len(observations)} misbehavior check(s):")
+        file_detections = 0
         for observation in observations:
+            obs_name = check_names.get(id(observation), type(observation).__name__)
+            print(f"  [ ] {obs_name} ...", end="", flush=True)
+            prior_count = len(observation.detections)
             detections = observation.analyze_bsm(ieee, bsm, ieee_hex)
-            for detection in detections:
+            new_detections = detections[prior_count:]
+            if new_detections:
+                print(f"\r  [!] {obs_name}: DETECTED ({len(new_detections)} detection(s))")
+                file_detections += len(new_detections)
+            else:
+                print(f"\r  [✓] {obs_name}: PASS")
+            for detection in new_detections:
                 target_id, observation_id, evidence = detection
                 mbr = observation.generate_report(target_id, observation_id, evidence, cert_bytes, signing_key, args.ma_key)
                 reports.append(mbr)
@@ -164,7 +176,9 @@ def launch():
                 coer_path = f"output/mbr-{observation.report_type}-{len(reports)}.coer"
                 with open(coer_path, "wb") as f:
                     f.write(mbr)
-                print(f"Wrote {coer_path}")
+                print(f"      -> Wrote report: {coer_path}")
+        print(f"\nSummary for {os.path.basename(bsm_path)}: {file_detections} misbehavior(s) detected.")
+    print(f"\n=== Total reports generated: {len(reports)} ===")
 
 if __name__ == "__main__":
     launch()
