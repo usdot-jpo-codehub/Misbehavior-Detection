@@ -1,4 +1,5 @@
 import base64
+import copy
 import ctypes
 import datetime
 import hashlib
@@ -29,14 +30,102 @@ class ReportGenerator:
         self.report = {}
         self.report_type = "plaintext"
 
+    def _decode_v2x_pdu(self, pdu_hex: str) -> dict:
+        try:
+            lib3287 = ctypes.CDLL("libs/J3287.so")
+            td = get_td(lib3287, "Ieee1609Dot2Data")
+            sptr, rval = decoder_utils.decode_oer(lib3287, td, bytes.fromhex(pdu_hex))
+            if rval.code != 0:
+                return {"Error": f"Ieee1609Dot2Data OER decode failed (code={rval.code})"}
+            ieee_jer = json.loads(encoder_utils.encode_jer(lib3287, td, sptr))
+            # Decode inner unsecuredData
+            try:
+                unsecured_data_hex = (
+                    ieee_jer.get("content", {})
+                    .get("signedData", {})
+                    .get("tbsData", {})
+                    .get("payload", {})
+                    .get("data", {})
+                    .get("content", {})
+                    .get("unsecuredData")
+                )
+                if unsecured_data_hex:
+                    lib2735 = ctypes.CDLL("libs/J2735.so")
+                    mf_td = get_td(lib2735, "MessageFrame")
+                    mf_sptr, mf_rval = decoder_utils.decode_uper(lib2735, mf_td, bytes.fromhex(unsecured_data_hex))
+                    if mf_rval.code == 0:
+                        mf_jer = json.loads(encoder_utils.encode_jer(lib2735, mf_td, mf_sptr))
+                        bsm_hex = mf_jer.get("value")
+                        if bsm_hex:
+                            bsm_td = get_td(lib2735, "BasicSafetyMessage")
+                            bsm_sptr, bsm_rval = decoder_utils.decode_uper(lib2735, bsm_td, bytes.fromhex(bsm_hex))
+                            if bsm_rval.code == 0:
+                                mf_jer["value"] = {"BasicSafetyMessage": json.loads(
+                                    encoder_utils.encode_jer(lib2735, bsm_td, bsm_sptr)
+                                )}
+                        (ieee_jer["content"]["signedData"]["tbsData"]
+                         ["payload"]["data"]["content"]["unsecuredData"]) = mf_jer
+            except Exception:
+                pass
+            return ieee_jer
+        except Exception as e:
+            return {"_raw": pdu_hex, "_error": str(e)}
+
+    def _decode_asrbsm_oer(self, lib, content_hex: str) -> dict:
+        try:
+            oer_bytes = bytes.fromhex(content_hex.replace(" ", ""))
+            td = get_td(lib, "AsrBsm")
+            sptr, rval = decoder_utils.decode_oer(lib, td, oer_bytes)
+            if rval.code != 0:
+                return {"Error": f"AsrBsm OER decode failed (code={rval.code})"}
+            asrbsm = json.loads(encoder_utils.encode_jer(lib, td, sptr))
+            for stream in asrbsm.get("v2xPduEvidence", []):
+                stream["v2xPdus"] = [self._decode_v2x_pdu(h) for h in stream.get("v2xPdus", [])]
+            return asrbsm
+        except Exception as e:
+            return {"Error": str(e)}
+
+    def _decode_mbr_oer(self, lib, oer_bytes: bytes) -> dict:
+        try:
+            td = get_td(lib, "SaeJ3287Mbr")
+            sptr, rval = decoder_utils.decode_oer(lib, td, oer_bytes)
+            if rval.code != 0:
+                return {"Error": f"SaeJ3287Mbr OER decode failed (code={rval.code})"}
+            mbr = json.loads(encoder_utils.encode_jer(lib, td, sptr))
+            if "report" in mbr and "content" in mbr["report"]:
+                mbr["report"]["content"] = self._decode_asrbsm_oer(lib, mbr["report"]["content"])
+            return mbr
+        except Exception as e:
+            return {"Error": str(e)}
+
+    def _decode_for_display(self) -> dict:
+        lib = ctypes.CDLL("libs/J3287.so")
+        result = copy.deepcopy(self.report)
+
+        if self.report_type == "plaintext":
+            pt = result["SaeJ3287Data"]["content"]["plaintext"]
+            pt["report"]["content"] = self._decode_asrbsm_oer(lib, pt["report"]["content"])
+
+        elif self.report_type == "signed":
+            tbs = (
+                result["SaeJ3287Data"]["content"]["signed"]
+                ["content"]["signedData"]["tbsData"]
+            )
+            b64 = tbs["payload"]["data"]["content"]["unsecuredData"]
+            tbs["payload"]["data"]["content"]["unsecuredData"] = \
+                self._decode_mbr_oer(lib, base64.b64decode(b64))
+
+        return result
+
     def print_report(self):
-        print(self.report)
+        print(json.dumps(self._decode_for_display(), indent=2))
 
     def debug_report(self):
         now = datetime.datetime.now()
         # Format for filename: YYYYMMDD_HHMMSS
         timestamp = now.strftime("%Y%m%d_%H%M%S")
-        open(f"output/mbr-{self.report_type}-{timestamp}.json", "w").write(json.dumps(self.report, indent=4))
+        decoded = self._decode_for_display()
+        open(f"output/mbr-{self.report_type}-{timestamp}.json", "w").write(json.dumps(decoded, indent=4))
         print(f"Wrote mbr-{self.report_type}-{timestamp}.json")
 
     def encode_report(self):
@@ -60,10 +149,6 @@ class ReportGenerator:
         """XER-encode a SaeJ3287Mbr content dict to OER bytes."""
         lib = ctypes.CDLL("libs/J3287.so")
 
-        # The compiled library uses a flat ASN.1 where AidSpecificReport.content
-        # is a plain ANY type. In XER, ANY is encoded as hex-dumped OER bytes,
-        # not as XML elements. So we must OER-encode AsrBsm first, then embed
-        # those bytes as hex in the <content> element of SaeJ3287Mbr.
         asrbsm_dict = mbr_content["report"]["content"]["AsrBsm"]
         td_asrbsm = get_td(lib, "AsrBsm")
         asrbsm_xer = xmltodict.unparse({"AsrBsm": asrbsm_dict}, full_document=False)
@@ -331,6 +416,33 @@ class ReportGenerator:
             elif observation_id == 7:
                 observation = "Security-HeaderLocationOutsideCertificateValidity"
 
+        # Pre-encode AsrBsm to OER bytes
+        _asrbsm_dict = {
+            "observations": {
+                "SEQUENCE": {
+                    "tgtId": target_id,
+                    "observations": {"ANY": f"{observation_id:02x}00"},
+                }
+            },
+            "v2xPduEvidence": {
+                "V2xPduStream": {
+                    "type": 2,
+                    "v2xPdus": {"ANY": evidence},
+                    "subjectPduIndex": 0,
+                }
+            },
+            "nonV2xPduEvidence": None,
+        }
+        _lib = ctypes.CDLL("libs/J3287.so")
+        _td_asrbsm = get_td(_lib, "AsrBsm")
+        _asrbsm_xer = xmltodict.unparse({"AsrBsm": _asrbsm_dict}, full_document=False)
+        _asrbsm_xer = re.sub(r'<([^/>\s]+)></\1>', r'<\1/>', _asrbsm_xer)
+        _sptr_asrbsm, _rval_asrbsm = decoder_utils.decode_xer(_lib, _td_asrbsm, _asrbsm_xer.encode("utf-8"))
+        if _rval_asrbsm.code != 0:
+            raise RuntimeError(f"AsrBsm XER decode failed (code={_rval_asrbsm.code})")
+        _asrbsm_oer = encoder_utils.encode_oer(_lib, _td_asrbsm, _sptr_asrbsm)
+        _content_hex = ' '.join(f'{b:02X}' for b in _asrbsm_oer)
+
         self.plaintext = {
             "SaeJ3287Data": {
                 "version": 1,
@@ -344,28 +456,7 @@ class ReportGenerator:
                         },
                         "report": {
                             "aid": 32,
-                            "content": {
-                                "AsrBsm": {
-                                    "observations": {
-                                        "SEQUENCE": {
-                                            "tgtId": target_id,
-                                            "observations": {
-                                                "ANY": f"{observation_id:02x}00"
-                                            }
-                                        }
-                                    },
-                                    "v2xPduEvidence": {
-                                        "V2xPduStream": {
-                                            "type": 2,
-                                            "v2xPdus": {
-                                                "ANY": evidence
-                                            },
-                                            "subjectPduIndex": 0,
-                                        }
-                                    },
-                                    "nonV2xPduEvidence": None
-                                }
-                            }
+                            "content": _content_hex,
                         }
                     }
                 }
