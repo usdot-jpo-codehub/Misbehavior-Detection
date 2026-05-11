@@ -72,7 +72,7 @@ python3 src/detection.py [options]
 
 | Flag | Short Form | Required | Default | Description |
 |---|---|---|---|---|
-| `--misbehaviors` | `-m` | No | `acceleration-ValueOutofRange` | Space-separated list of one or more misbehavior checks to run. |
+| `--misbehaviors` | `-m` | No | None | Space-separated list of one or more misbehavior checks to run. Will check all misbehaviors by default if no individual misbehaviors are provided. |
 | `--bsm` | `-b` | No | `data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer` | Path to a single BSM file or to a directory containing multiple files. |
 | `--certs-dir` | `-c` | No | None | Path to an SCMS certificate bundle used to sign generated reports. Supports pseudonym bundles with a `download/` layout and RSU bundles with an `rsu-*/downloadFiles/` layout. |
 | `--ma-key` | None | No | None | Path to the Misbehavior Authority recipient certificate. Use this together with `--certs-dir` when generating an sTE-wrapped report instead of a plaintext or signed-only report. |
@@ -80,7 +80,7 @@ python3 src/detection.py [options]
 
 ### Flag Usage Notes
 
-- `--misbehaviors` accepts multiple values separated by spaces, for example: `--misbehaviors acceleration-ValueOutofRange security-HeaderPsidIncWithCertificate`
+- `--misbehaviors` accepts multiple values separated by spaces, for example: `--misbehaviors acceleration-ValueOutofRange security-HeaderPsidIncWithCertificate`. If the flag is unused, the tool will check against all available misbehaviors by default.
 - `--bsm` can target either one file or an entire directory. When a directory is provided, every file in that directory is processed.
 - If `--certs-dir` is omitted, reports will be generated as plaintext.
 - If `--certs-dir` is included, but `--ma-key` is omitted, reports will be generated as signed but not encrypted.
@@ -104,7 +104,7 @@ This tool currently supports detection and reporting of all SAE J3287-specified 
 
 ### Example Commands
 
-Run the default acceleration check against one input file:
+Run an acceleration check against one input file:
 
 ```bash
 python3 src/detection.py --bsm data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer
