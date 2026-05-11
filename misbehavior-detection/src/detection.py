@@ -88,8 +88,9 @@ def load_BSM(filepath):
 def launch():
     parser = argparse.ArgumentParser(description='run misbehavior detection')
     parser.add_argument('-m', '--misbehaviors', type=str, nargs='+',
-                        help='space-separated list of misbehaviors to check',
-                        default=['acceleration-ValueOutofRange'])
+                        help='space-separated list of misbehaviors to check; '
+                             'omit to run all available misbehaviors (default)',
+                        default=None)
     parser.add_argument('-b', '--bsm', type=str,
                         help='path to a BSM .coer file OR a directory containing .coer files',
                         default='data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer')
@@ -105,11 +106,12 @@ def launch():
 
     args = parser.parse_args()
 
+    misbehavior_list = args.misbehaviors if args.misbehaviors is not None else list(OBS_TITLES.keys())
     observations = []
-    for misbehavior_type in args.misbehaviors: 
-        if misbehavior_type in OBS_TITLES: 
+    for misbehavior_type in misbehavior_list:
+        if misbehavior_type in OBS_TITLES:
             observations.append(OBS_TITLES[misbehavior_type])
-        else: 
+        else:
             raise Exception(f"{misbehavior_type} not a valid observation name!")
 
     cert_bytes = None
