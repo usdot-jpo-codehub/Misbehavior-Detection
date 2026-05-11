@@ -27,18 +27,26 @@ pip install -r requirements.txt
 **ASN.1 definition modifications removing parameterization are required for compatibility with asn1c library.** 
 
 1. Install open-source asn1c library from: https://github.com/mouse07410/asn1c.
-2. Clone the ASN.1 Parameterized to Flat Translation Tool from: https://noblis.ghe.com/Noblis/ASN.1-Parameterized-to-Flat-Translation-Tool.
+2. Clone the ASN.1 Parameterized to Flat Translation Tool from: https://github.com/usdot-jpo-codehub/ASN.1-Parameterization-to-Flat-Translation-Tool.
 3. Move the `stubs/` directory and the `build_asn_lib.sh` and `compile_asn1.sh` files into the base directory of the ASN.1 Parameterized to Flat Translation Tool.
 4. Follow the instructions in the ASN.1 Parameterized to Flat Translation Tool README to generate deparameterized ASN.1 files:
 ```
 python3 asn1_deparam.py --src [input_directory]
 ```
-5. Run the `compile_asn1.sh` script followed by the `build_asn_lib.sh` script:
+5. Add any missing imports (to be automated in future release of ASN.1 Parameterized to Flat Translation Tool). 
+```
+ EtsiTs103097Data -> EtsiTs103759Core.asn
+ Ieee1609Dot2Data -> Ieee1609Dot2Dot1AcaRaInterface.asn and Ieee1609Dot2Dot1Acpc.asn
+ V2xPduStream -> SaeJ3287AsrBsm.asn
+```
+6. Run the `compile_asn1.sh` script followed by the `build_asn_lib.sh` script:
 ```
 ./compile_asn1.sh
 ./build_asn_lib.sh
 ```
-6. Place the generated `libs/J3287.so` file into `Misbehavior-Detection/misbehavior-detection/libs/`.
+Note: If you run into an error with the `compile_asn1.sh` script, verify that the various directory paths in the script match your own directory structure and adjust if necessary. By default, the script contains the following: `../../asn1c/asn1c/asn1c -fcompound-names -S ../../asn1c/skeletons ../J3287_ASN_flat/*.asn`
+
+7. Place the generated `libs/J3287.so` file into `Misbehavior-Detection/misbehavior-detection/libs/`.
 
 
 ## Misbehavior Detection Workflow
