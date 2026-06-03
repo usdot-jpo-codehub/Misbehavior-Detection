@@ -27,7 +27,7 @@ pip install -r requirements.txt
 **ASN.1 definition modifications removing parameterization are required for compatibility with asn1c library.** 
 
 1. Install open-source asn1c library from: https://github.com/mouse07410/asn1c.
-2. Clone the ASN.1 Parameterized to Flat Translation Tool from: https://github.com/usdot-jpo-codehub/ASN.1-Parameterization-to-Flat-Translation-Tool.
+2. Clone the ASN.1 Parameterized to Flat Translation Tool from: https://github.com/usdot-jpo-codehub/ASN.1-Parameterized-to-Flat-Translation-Tool.
 3. Move the `stubs/` directory and the `build_asn_lib.sh` and `compile_asn1.sh` files into the base directory of the ASN.1 Parameterized to Flat Translation Tool.
 4. Follow the instructions in the ASN.1 Parameterized to Flat Translation Tool README to generate deparameterized ASN.1 files:
 ```
