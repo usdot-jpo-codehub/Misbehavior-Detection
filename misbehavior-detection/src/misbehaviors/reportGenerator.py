@@ -124,8 +124,13 @@ class ReportGenerator:
         now = datetime.datetime.now()
         # Format for filename: YYYYMMDD_HHMMSS
         timestamp = now.strftime("%Y%m%d_%H%M%S")
+        path = f"output/mbr-{self.report_type}-{timestamp}.json"
+        while os.path.exists(path):
+            prefix, suffix = timestamp[:-1], int(timestamp[-1])
+            timestamp = prefix + str(suffix + 1)
+            path = f"output/mbr-{self.report_type}-{timestamp}.json"
         decoded = self._decode_for_display()
-        open(f"output/mbr-{self.report_type}-{timestamp}.json", "w").write(json.dumps(decoded, indent=4))
+        open(path, "w").write(json.dumps(decoded, indent=4))
         print(f"Wrote mbr-{self.report_type}-{timestamp}.json")
 
     def encode_report(self):

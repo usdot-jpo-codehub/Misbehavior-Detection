@@ -147,6 +147,7 @@ class DataSigner:
                 output = p.name[:-5].split("_")
                 iValue, jValue = output[0], output[1]
                 return iValue, jValue
+        print("No valid cert found in bundle.")
         return None
 
     def expansion_scalar_aes_dm(self, seed_key: bytes, i: int, j: int, order_n: int) -> int:
