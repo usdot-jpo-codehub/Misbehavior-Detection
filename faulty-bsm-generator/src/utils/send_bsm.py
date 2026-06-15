@@ -24,7 +24,7 @@ def read_file(path_to_file):
 # Try these in order
 UDP_IPS = ["127.0.0.1"]
 UDP_PORT = 46800
-FILE = "/home/m34361/ode-stack/mbd-client/faulty-bsm-generator/data/example_IEEE/bsmLogDuringEvent_1582235136_563_0320.bin_no_header"
+FILE = "/home/m31078/Misbehavior-Detection/faulty-bsm-generator/data/example_IEEE/bsmLogDuringEvent_1582235136_563_0320.bin_no_header"
 
 MESSAGE = read_file(FILE)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

@@ -1,3 +1,4 @@
+import hashlib
 import socket
 import json
 import os
@@ -101,7 +102,7 @@ def main(args):
                 # clean the JER encoding for processing and decoding
                 clean_ieeedot2data_msg = fix_jer(parsed['metadata']['ieee1609dot2DecodedJson'])
                 # check the dictionary if we've already seen this message
-                msg_hash = hash(bytes.fromhex(parsed['metadata']['asn1']))
+                msg_hash = hashlib.sha256(bytes.fromhex(parsed['metadata']['asn1'])).digest()
                 if msg_hash in msg_record: 
                     print(f"I made this message! Ignoring...")
                     continue
@@ -111,7 +112,7 @@ def main(args):
 
                 # hash the new messages so we redo it
                 for item in msg_cache:
-                    perturb_hash = hash(item.msg)
+                    perturb_hash = hashlib.sha256(item.msg).digest()
                     msg_record[perturb_hash] = item.msg
                     send_perturbed_msg(item.msg)
 

@@ -51,6 +51,8 @@ Note: If you run into an error with the `compile_asn1.sh` script, verify that th
 
 ## Misbehavior Detection Workflow
 
+### File / Directory Mode
+
 1. Generate shared library for SAE J3287 ASN.1 following instructions in above section.
 2. Provide a COER-encoded IEEE1609Dot2Data file in `data/Ieee1609Dot2Data/`. This file should encompass a faulty (misbehaving) BSM. `Ieee1609Dot2Data_bad_accel.coer` has been provided for your convenience. This file contains a BSM with an acceleration exceeding the range allowed by the J3287 ASN.1 schema.
 3. Run detection:
@@ -61,6 +63,20 @@ python3 src/detection.py --misbehaviors acceleration-ValueOutofRange --bsm data/
 
 Use `--debug` flag to emit JSON snapshots of the internal report structure.
 
+### ODE Live-Stream Mode (Kafka)
+
+The tool can subscribe directly to the ODE's `topic.OdeBsmJson` Kafka topic and run detection against BSMs as they arrive in real time.
+
+1. Ensure the ODE stack is running and publishing BSMs to Kafka.
+2. Start detection in Kafka mode:
+```bash
+python3 src/detection.py --kafka
+```
+The consumer connects to `localhost:9092` and subscribes to `topic.OdeBsmJson` by default. Override these with flags or environment variables (see [Environment Variables](#environment-variables) below).
+
+4. Each incoming ODE message is decoded using the raw COER bytes stored in `metadata.asn1`. All configured misbehavior checks are run and any detections are written to `output/` exactly as in file mode.
+5. Press **Ctrl-C** to stop the consumer gracefully.
+
 
 ## Command-Line Arguments
 
@@ -70,10 +86,12 @@ Primary usage:
 python3 src/detection.py [options]
 ```
 
+### Core Options
+
 | Flag | Short Form | Required | Default | Description |
 |---|---|---|---|---|
 | `--misbehaviors` | `-m` | No | None | Space-separated list of one or more misbehavior checks to run. Will check all misbehaviors by default if no individual misbehaviors are provided. |
-| `--bsm` | `-b` | No | `data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer` | Path to a single BSM file or to a directory containing multiple files. |
+| `--bsm` | `-b` | No | `data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer` | Path to a single BSM file or to a directory containing multiple files. Ignored when `--kafka` is set. |
 | `--certs-dir` | `-c` | No | None | Path to an SCMS certificate bundle used to sign generated reports. Supports pseudonym bundles with a `download/` layout and RSU bundles with an `rsu-*/downloadFiles/` layout. |
 | `--ma-key` | None | No | None | Path to the Misbehavior Authority recipient certificate. Use this together with `--certs-dir` when generating an sTE-wrapped report instead of a plaintext or signed-only report. |
 | `--debug` | `-d` | No | Disabled | Prints the internal report representation as JSON for inspection while still writing encoded output files to `output/`. |
@@ -102,6 +120,25 @@ This tool currently supports detection and reporting of all SAE J3287-specified 
 | `security-MessageIncWithSsp` | Security message is inconsistent with the SSP (Service Specific Permissions) |
 | `security-MessageLocationOutsideCertificateValidity` | Security message location is outside the certificate's validity region |
 
+### Kafka Live-Stream Options
+
+| Flag | Required | Default | Description |
+|---|---|---|---|
+| `--kafka` | No | Disabled | Subscribe to the ODE's Kafka topic and process BSMs from the live stream instead of reading from files. |
+| `--kafka-bootstrap` | No | `$KAFKA_BOOTSTRAP` or `localhost:9092` | Kafka bootstrap server(s), e.g. `broker:9092`. |
+| `--kafka-topic` | No | `$KAFKA_TOPIC` or `topic.OdeBsmJson` | Kafka topic to consume. |
+| `--kafka-group-id` | No | `$KAFKA_GROUP_ID` or `misbehavior-detection` | Kafka consumer group ID. |
+
+### Environment Variables
+
+The Kafka connection settings can also be supplied via environment variables. CLI flags take precedence over environment variables.
+
+| Variable | Description | Default |
+|---|---|---|
+| `KAFKA_BOOTSTRAP` | Kafka bootstrap server(s) | `localhost:9092` |
+| `KAFKA_TOPIC` | Kafka topic to consume | `topic.OdeBsmJson` |
+| `KAFKA_GROUP_ID` | Kafka consumer group ID | `misbehavior-detection` |
+
 ### Example Commands
 
 Run an acceleration check against one input file:
@@ -127,6 +164,23 @@ python3 src/detection.py \
 	--bsm data/Ieee1609Dot2Data/Ieee1609Dot2Data_bad_accel.coer \
 	--certs-dir path/to/scms-bundle \
 	--ma-key path/to/ma_public_key.cert
+```
+
+Subscribe to the ODE Kafka stream using defaults:
+
+```bash
+python3 src/detection.py --kafka
+```
+
+Subscribe to a remote Kafka broker with specific misbehavior checks and signed reports:
+
+```bash
+python3 src/detection.py \
+	--kafka \
+	--kafka-bootstrap broker.example.com:9092 \
+	--kafka-topic topic.OdeBsmJson \
+	--misbehaviors acceleration-ValueOutofRange security-HeaderPsidIncWithCertificate \
+	--certs-dir path/to/scms-bundle
 ```
 
 
